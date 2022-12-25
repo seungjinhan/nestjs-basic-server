@@ -26,4 +26,4 @@ content-type: application/json
 ###
 
 GET {{hostContext}}/profile HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NzE5ODUzNTUsImV4cCI6MTY3MTk4NTQxNX0.z3yUeILa68QgaZhp6JgWqF9Gou4fyRbknV8RwzBQbxY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QxQHRlc3QuY29tIiwic3ViIjoxLCJpYXQiOjE2NzE5ODYxNzYsImV4cCI6MTY3MTk4NjIzNn0.OOJ62wlmGNVHWG3jevRjWTh8gDYtbRfJ3OcH4Zh9Heo
