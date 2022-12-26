@@ -6,8 +6,8 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { LoggingInterceptor } from '../config/interceptors/logger.interceptor';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import { RolesGuard } from 'config/roles/roles.guard';
+import { JwtAuthGuard } from '../config/annotations/no_jwt/no.jwt.guard';
+import { RolesGuard } from '../config/annotations/roles/roles.guard';
 
 @Module({
   imports: [
@@ -26,7 +26,7 @@ import { RolesGuard } from 'config/roles/roles.guard';
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
     },
-    { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: JwtAuthGuard }, // 전체 가 JWT를 가져야 처리.. Skip하려면 @Public()
     {
       provide: APP_GUARD,
       useClass: RolesGuard,

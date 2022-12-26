@@ -1,7 +1,14 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  HttpStatus,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Role } from '@prisma/client';
 import { ROLES_KEY } from './roles.decorator';
+import { HttpException } from '@nestjs/common';
+import { EXCEPTION_MESSAGE } from '../../exceptions/message';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -15,7 +22,15 @@ export class RolesGuard implements CanActivate {
     if (!requiredRoles) {
       return true;
     }
+
     const { user } = context.switchToHttp().getRequest();
-    return requiredRoles.some((role) => user.roles?.includes(role));
+    const res = requiredRoles.some((role) => user.roles?.includes(role));
+    if (res === false) {
+      throw new HttpException(
+        EXCEPTION_MESSAGE.WRONG_ROLE,
+        HttpStatus.FORBIDDEN,
+      );
+    }
+    return res;
   }
 }

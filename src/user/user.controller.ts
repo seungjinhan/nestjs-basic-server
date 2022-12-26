@@ -8,6 +8,8 @@ import {
   Delete,
 } from '@nestjs/common';
 import { UserService } from './user.service';
+import { Role } from '@prisma/client';
+import { ROLES } from '../../config/annotations/roles/roles.decorator';
 
 @Controller('user')
 export class UserController {
@@ -18,10 +20,11 @@ export class UserController {
   //   return this.userService.create(createUserDto);
   // }
 
-  // @Get()
-  // findAll() {
-  //   return this.userService.findAll();
-  // }
+  @ROLES(Role.SUPER)
+  @Get()
+  findAll() {
+    return 'good';
+  }
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {

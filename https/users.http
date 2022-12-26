@@ -1,0 +1,11 @@
+@hostname = 127.0.0.1
+@port = 9999
+@host = http://{{hostname}}:{{port}}/api
+@contentType = application/json
+@Context = user
+@hostContext = {{host}}/{{Context}}
+###
+
+###
+GET {{hostContext}} HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QxQHRlc3QuY29tIiwic3ViIjoxLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE2NzIwNjgzNjUsImV4cCI6MTY3MjA2ODQyNX0.2kZMPr3lU2J2rsI4v4jWbV5C8ini4YzFeLNyl8Z4pC4

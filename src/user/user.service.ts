@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Role } from '@prisma/client';
 
 export type User = any;
 
@@ -9,11 +10,13 @@ export class UserService {
       id: 1,
       email: 'test1@test.com',
       password: '1234',
+      roles: [Role.ADMIN],
     },
     {
       id: 2,
       email: 'test2@test.com',
       password: '1234',
+      roles: [Role.SUPER],
     },
   ];
 

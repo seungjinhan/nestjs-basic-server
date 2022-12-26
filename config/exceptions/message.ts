@@ -1,0 +1,3 @@
+export const EXCEPTION_MESSAGE = {
+  WRONG_ROLE: 'WRONG_ROLE',
+};
