@@ -11,7 +11,7 @@ import { JwtAuthGuard } from '@config/annotations/no_jwt/no.jwt.guard';
 import { RolesGuard } from '@config/annotations/roles/roles.guard';
 import { SampleModule } from '@src/sample/sample.module';
 import { FilesModule } from './files/files.module';
-import { MulterModule } from '@nestjs/platform-express';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -21,6 +21,11 @@ import { MulterModule } from '@nestjs/platform-express';
       rootPath: join(__dirname, '..', 'static'),
       exclude: ['/api*', '/docs*'],
     }),
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 10,
+    }),
+    /////////////////////////////////////////////////////////////////////
     UserModule,
     AuthModule,
     SampleModule,
