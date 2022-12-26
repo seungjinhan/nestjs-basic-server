@@ -1,13 +1,17 @@
+import { join } from 'path';
 import { Module } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import { LoggingInterceptor } from '../config/interceptors/logger.interceptor';
-import { JwtAuthGuard } from '../config/annotations/no_jwt/no.jwt.guard';
-import { RolesGuard } from '../config/annotations/roles/roles.guard';
+
+import { UserModule } from '@src/user/user.module';
+import { AuthModule } from '@src/auth/auth.module';
+import { LoggingInterceptor } from '@config/interceptors/logger.interceptor';
+import { JwtAuthGuard } from '@config/annotations/no_jwt/no.jwt.guard';
+import { RolesGuard } from '@config/annotations/roles/roles.guard';
+import { SampleModule } from '@src/sample/sample.module';
+import { FilesModule } from './files/files.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -15,10 +19,12 @@ import { RolesGuard } from '../config/annotations/roles/roles.guard';
     ConfigModule.forRoot({ envFilePath: ['.env'] }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'static'),
-      exclude: ['/api*'],
+      exclude: ['/api*', '/docs*'],
     }),
     UserModule,
     AuthModule,
+    SampleModule,
+    FilesModule,
   ],
   controllers: [],
   providers: [
