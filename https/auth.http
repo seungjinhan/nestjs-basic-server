@@ -20,10 +20,10 @@ POST {{hostContext}}/token HTTP/1.1
 content-type: application/json
 
 {
-    "username":"test1@test.com",
+    "username":"hanblues@gmail.com",
     "password":"1234"
 }
 ###
 
 GET {{hostContext}}/profile HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3QxQHRlc3QuY29tIiwic3ViIjoxLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE2NzIwNjUwMzksImV4cCI6MTY3MjA2NTA5OX0.9EyKW_gXIT3WrQUjKu_hlzZf8LzTD-v9bM-A0JBZn24
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImhhbmJsdWVzQGdtYWlsLmNvbSIsImlkIjoxLCJpYXQiOjE2NzIxNDIyMDksImV4cCI6MTcwMzY5OTgwOX0.tBy4FdgZ4ogtbhLAXqpks1DemizOsNvpNEtf6R5Ydws

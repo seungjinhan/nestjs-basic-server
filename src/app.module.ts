@@ -9,8 +9,6 @@ import { PrismaModule } from '@config/prisma/prisma.module';
 import { UserModule } from '@src/user/user.module';
 import { AuthModule } from '@src/auth/auth.module';
 import { LoggingInterceptor } from '@src/config/interceptors/logger.interceptor';
-import { JwtAuthGuard } from '@src/config/annotations/no_jwt/no.jwt.guard';
-import { RolesGuard } from '@src/config/annotations/roles/roles.guard';
 import { SampleModule } from '@src/sample/sample.module';
 import { FilesModule } from './files/files.module';
 import { ThrottlerModule } from '@nestjs/throttler';
