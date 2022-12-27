@@ -14,10 +14,12 @@ export class UserService {
   }
 
   findAll() {
+    console.log('findAll Server');
     return this.prisma.user.findMany();
   }
 
   findOne(id: number) {
+    console.log('findOne Server');
     return this.prisma.user.findUnique({ where: { id } });
   }
   async findOneByEmail(email: string): Promise<User | undefined> {
