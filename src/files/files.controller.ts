@@ -14,7 +14,7 @@ import { FilesService } from './files.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { No_JWT } from '@config/annotations/no_jwt/no.jwt.decorator';
+import { No_JWT } from '@src/config/annotations/no_jwt/no.jwt.decorator';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 

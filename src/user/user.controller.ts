@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Role } from '@prisma/client';
-import { ROLES } from '@config/annotations/roles/roles.decorator';
+import { ROLES } from '@src/config/annotations/roles/roles.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiBearerAuth()

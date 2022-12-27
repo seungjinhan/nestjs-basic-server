@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { No_JWT } from '@config/annotations/no_jwt/no.jwt.decorator';
-import { EMAIL_PW_CHECK_GUARD } from '@config/authentication/local-auth.guard';
+import { No_JWT } from '@src/config/annotations/no_jwt/no.jwt.decorator';
+import { EMAIL_PW_CHECK_GUARD } from '@src/config/authentication/local-auth.guard';
 import {
   ApiBearerAuth,
   ApiOperation,
