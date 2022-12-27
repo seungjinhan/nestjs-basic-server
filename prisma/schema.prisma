@@ -24,6 +24,16 @@ model User {
   updated DateTime @updatedAt
   role Role @default(USER)
   img String?
+  token Token?
+}
+
+model Token{
+  id    Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int @unique
+  token String @unique
+  created DateTime @default(now())
+  updated DateTime @updatedAt
 }
 
 enum Role{

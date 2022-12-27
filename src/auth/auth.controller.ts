@@ -42,6 +42,7 @@ export class AuthController {
   @ApiResponse({ status: 200, description: '조회성공' })
   @ApiCreatedResponse({ type: UserEntity })
   profile(@Request() req) {
+    console.log('profile: ', req.user);
     return req.user;
   }
 }
