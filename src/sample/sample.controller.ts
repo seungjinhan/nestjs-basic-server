@@ -10,8 +10,10 @@ import {
 import { SampleService } from './sample.service';
 import { CreateSampleDto } from './dto/create-sample.dto';
 import { UpdateSampleDto } from './dto/update-sample.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('sample')
+@ApiTags('Sample')
 export class SampleController {
   constructor(private readonly sampleService: SampleService) {}
 

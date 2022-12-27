@@ -2,6 +2,8 @@ import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { No_JWT } from '@src/config/annotations/no_jwt/no.jwt.decorator';
 import { EMAIL_PW_CHECK_GUARD } from '@src/config/authentication/local-auth.guard';
+import { UserEntity } from '../user/entities/user.entity';
+import { ApiCreatedResponse } from '@nestjs/swagger';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -19,6 +21,7 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ summary: '이메일, 패스워드로 로그인하기' })
   @ApiResponse({ status: 200, description: '로그인성공' })
+  @ApiCreatedResponse({ type: UserEntity })
   login(@Request() req) {
     return req.user;
   }
@@ -35,6 +38,7 @@ export class AuthController {
   @Get('profile')
   @ApiOperation({ summary: '사용자 프로필 조회 (토큰필요)' })
   @ApiResponse({ status: 200, description: '조회성공' })
+  @ApiCreatedResponse({ type: UserEntity })
   profile(@Request() req) {
     return req.user;
   }

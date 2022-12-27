@@ -17,8 +17,10 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { No_JWT } from '@src/config/annotations/no_jwt/no.jwt.decorator';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('files')
+@ApiTags('File')
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
