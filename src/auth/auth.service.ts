@@ -5,6 +5,8 @@ import { UserEntity } from '../user/entities/user.entity';
 import { PrismaService } from '../config/prisma/prisma.service';
 import { TokenEntity } from './entities/auth.entity';
 
+export type Token = any;
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -45,5 +47,10 @@ export class AuthService {
         data: { token: token },
       });
     }
+  }
+
+  async findToken(userId: number): Promise<Token | undefined> {
+    console.log(userId);
+    return await this.prisma.token.findUnique({ where: { userId } });
   }
 }
