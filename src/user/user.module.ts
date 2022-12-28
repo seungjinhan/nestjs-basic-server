@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { PrismaModule } from '../config/prisma/prisma.module';
+import { CacheModule } from '../config/cache/cache.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, CacheModule],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],

@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { CacheModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from '@nestjs/config';
@@ -12,19 +12,10 @@ import { LoggingInterceptor } from '@src/config/interceptors/logger.interceptor'
 import { SampleModule } from '@src/sample/sample.module';
 import { FilesModule } from './files/files.module';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { HttpCacheInterceptor } from './config/interceptors/http.cache.Interceptor';
-import { redisStore } from 'cache-manager-redis-store';
+import { CacheModule } from './config/cache/cache.module';
 
 @Module({
   imports: [
-    CacheModule.register({
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      store: redisStore,
-      host: 'localhost',
-      port: 6379,
-      ttl: 10,
-    }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'static'),
       exclude: ['/api*', '/docs*'],
@@ -36,6 +27,7 @@ import { redisStore } from 'cache-manager-redis-store';
       limit: 10,
     }),
     PrismaModule,
+    CacheModule,
     /////////////////////////////////////////////////////////////////////
     UserModule,
     AuthModule,
@@ -47,10 +39,6 @@ import { redisStore } from 'cache-manager-redis-store';
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: HttpCacheInterceptor,
     },
     // { provide: APP_GUARD, useClass: JwtAuthGuard }, // 전체 가 JWT를 가져야 처리.. Skip하려면 @Public()
     // {

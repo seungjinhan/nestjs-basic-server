@@ -1,20 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, CACHE_MANAGER } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '../config/prisma/prisma.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Cache } from 'cache-manager';
 
 export type User = any;
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private readonly cache: Cache,
+  ) {}
 
   create(user: CreateUserDto) {
     return this.prisma.user.create({ data: user });
   }
 
-  findAll() {
-    console.log('findAll Server');
+  async findAll() {
+    await this.cache.set('good', 'sdfsdf');
     return this.prisma.user.findMany();
   }
 

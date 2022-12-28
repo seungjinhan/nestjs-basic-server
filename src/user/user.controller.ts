@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   CacheKey,
   CacheTTL,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import {
@@ -21,6 +22,7 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { HttpCacheInterceptor } from '../config/interceptors/http.cache.Interceptor';
 
 @ApiBearerAuth()
 @ApiTags('User')
@@ -40,6 +42,8 @@ export class UserController {
   @ApiCreatedResponse({ type: UserEntity, isArray: true })
   @ApiOperation({ summary: '사용자 전체 조회' })
   @ApiResponse({ status: 200, description: '전체 조회 성공' })
+  @CacheKey('Han')
+  @CacheTTL(10)
   findAll() {
     console.log('findAll');
     return this.userService.findAll();
@@ -49,6 +53,8 @@ export class UserController {
   @ApiCreatedResponse({ type: UserEntity })
   @ApiOperation({ summary: '아이디로 사용자 조회' })
   @ApiResponse({ status: 200, description: '조회 성공' })
+  @CacheKey('Han2')
+  @CacheTTL(10)
   findOne(@Param('id', ParseIntPipe) id: number) {
     console.log('call FindOne');
     return this.userService.findOne(id);
