@@ -2,8 +2,6 @@ import {
   Controller,
   Get,
   Post,
-  Body,
-  Patch,
   Param,
   Delete,
   UseInterceptors,
@@ -12,15 +10,16 @@ import {
   Response,
   ParseIntPipe,
   Query,
+  ParseFilePipeBuilder,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
 import { ApiTags } from '@nestjs/swagger';
 import { createReadStream } from 'fs';
 import { FileEntity } from './entities/file.entity';
+import { HttpException, HttpStatus } from '@nestjs/common';
+import { uploadImage } from '../config/fileupload/file.upload.config';
 
 @Controller('files')
 @ApiTags('File')
@@ -33,20 +32,16 @@ export class FilesController {
    * @returns 업로드 파일 정보
    */
   @Post('upload')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './files',
-        filename: (req, file, callback) => {
-          const suffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = extname(file.originalname);
-          const filename = `${suffix}${ext}`;
-          callback(null, filename);
-        },
-      }),
-    }),
-  )
-  async upload(@UploadedFile() file: Express.Multer.File) {
+  @UseInterceptors(FileInterceptor('file', uploadImage))
+  async upload(
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({ fileType: /(gif|png|jpg|jpeg)$/ })
+        .addMaxSizeValidator({ maxSize: 1000000000 })
+        .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
+    )
+    file: Express.Multer.File,
+  ) {
     /*
         {
         fieldname: 'file',
@@ -68,12 +63,15 @@ export class FilesController {
    * @param res
    * @returns
    */
-  @Get('download')
+  @Get('download/:id')
   async download(
-    @Query('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Response({ passthrough: true }) res,
   ): Promise<StreamableFile> {
     const fileInfo: FileEntity = await this.filesService.findOne(id);
+    if (!fileInfo) {
+      throw new HttpException('File not found', HttpStatus.BAD_REQUEST);
+    }
     const file = createReadStream(fileInfo.path);
     res.set({
       'Content-Disposition': `attachment; filename=${fileInfo.originalname}`,
@@ -81,6 +79,11 @@ export class FilesController {
     return new StreamableFile(file);
   }
 
+  /**
+   * 파일 삭제(실제 파일도 삭제)
+   * @param id 파일 아이디
+   * @returns
+   */
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.filesService.remove(id);

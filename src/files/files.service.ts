@@ -9,7 +9,6 @@ import { PrismaService } from '../config/prisma/prisma.service';
 export class FilesService {
   constructor(private readonly prisma: PrismaService) {}
   async create(createFileDto: CreateFileDto) {
-    console.log(createFileDto);
     return await this.prisma.files.create({ data: createFileDto });
   }
 
