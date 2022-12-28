@@ -17,6 +17,7 @@ import { Cache } from 'cache-manager';
           store: redisStore,
           host: 'localhost',
           port: 6379,
+          ttl: 0,
         };
       },
     }),
@@ -27,7 +28,7 @@ export class CacheModule implements OnModuleInit {
   constructor(@Inject(CACHE_MANAGER) private readonly cache: Cache) {}
 
   public onModuleInit(): any {
-    const logger = new Logger('Cache');
+    const logger = new Logger('CacheModule');
 
     // Commands that are interesting to log
     const commands = ['get', 'set', 'del'];

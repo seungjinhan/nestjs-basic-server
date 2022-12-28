@@ -18,7 +18,7 @@ export class UserService {
   }
 
   async findAll() {
-    await this.cache.set('good', 'sdfsdf');
+    await this.cache.set('good', 'sdfsdfsdfsdsdf');
     return this.prisma.user.findMany();
   }
 

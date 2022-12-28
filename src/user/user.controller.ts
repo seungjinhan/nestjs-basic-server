@@ -9,7 +9,6 @@ import {
   ParseIntPipe,
   CacheKey,
   CacheTTL,
-  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import {
@@ -22,7 +21,6 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { HttpCacheInterceptor } from '../config/interceptors/http.cache.Interceptor';
 
 @ApiBearerAuth()
 @ApiTags('User')
