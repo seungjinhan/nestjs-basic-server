@@ -1,6 +1,6 @@
 import { join } from 'path';
 import { Module } from '@nestjs/common';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from '@nestjs/config';
 
@@ -13,6 +13,9 @@ import { SampleModule } from '@src/sample/sample.module';
 import { FilesModule } from './files/files.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { CacheModule } from './config/cache/cache.module';
+import { AuthInterceptor } from './config/interceptors/auth.interceptor';
+import { MustAuthGuard } from './config/annotations/authCheck/must.auth.guard';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -28,6 +31,7 @@ import { CacheModule } from './config/cache/cache.module';
     }),
     PrismaModule,
     CacheModule,
+    JwtModule,
     /////////////////////////////////////////////////////////////////////
     UserModule,
     AuthModule,
@@ -40,11 +44,14 @@ import { CacheModule } from './config/cache/cache.module';
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
     },
-    // { provide: APP_GUARD, useClass: JwtAuthGuard }, // 전체 가 JWT를 가져야 처리.. Skip하려면 @Public()
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: RolesGuard,
-    // },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuthInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: MustAuthGuard,
+    },
   ],
 })
 export class AppModule {}

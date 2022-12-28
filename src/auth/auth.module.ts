@@ -16,7 +16,7 @@ import { PrismaModule } from '../config/prisma/prisma.module';
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '1y' },
+      signOptions: { expiresIn: '1h' }, // https://github.com/zeit/ms.js
     }),
   ],
   controllers: [AuthController],
