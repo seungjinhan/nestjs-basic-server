@@ -8,23 +8,30 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
-  UploadedFiles,
+  StreamableFile,
+  Response,
+  ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { CreateFileDto } from './dto/create-file.dto';
-import { UpdateFileDto } from './dto/update-file.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { No_JWT } from '@src/config/annotations/no_jwt/no.jwt.decorator';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { ApiTags } from '@nestjs/swagger';
+import { createReadStream } from 'fs';
+import { FileEntity } from './entities/file.entity';
 
 @Controller('files')
 @ApiTags('File')
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
-  @No_JWT()
+  /**
+   * 파일 업로드
+   * @param file
+   * @returns 업로드 파일 정보
+   */
   @Post('upload')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -39,32 +46,43 @@ export class FilesController {
       }),
     }),
   )
-  upload(@UploadedFile() file: Express.Multer.File) {
-    console.log(file);
+  async upload(@UploadedFile() file: Express.Multer.File) {
+    /*
+        {
+        fieldname: 'file',
+        originalname: 'padlock.png',
+        encoding: '7bit',
+        mimetype: 'image/png',
+        destination: './files',
+        filename: '1672235962820-3654071.png',
+        path: 'files/1672235962820-3654071.png',
+        size: 9811
+        }
+    */
+    return await this.filesService.create(new CreateFileDto().convert(file));
   }
 
-  @Post()
-  create(@Body() createFileDto: CreateFileDto) {
-    return this.filesService.create(createFileDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.filesService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.filesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFileDto: UpdateFileDto) {
-    return this.filesService.update(+id, updateFileDto);
+  /**
+   * 파일 다운로드
+   * @param id 파일 아이디
+   * @param res
+   * @returns
+   */
+  @Get('download')
+  async download(
+    @Query('id', ParseIntPipe) id: number,
+    @Response({ passthrough: true }) res,
+  ): Promise<StreamableFile> {
+    const fileInfo: FileEntity = await this.filesService.findOne(id);
+    const file = createReadStream(fileInfo.path);
+    res.set({
+      'Content-Disposition': `attachment; filename=${fileInfo.originalname}`,
+    });
+    return new StreamableFile(file);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.filesService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.filesService.remove(id);
   }
 }

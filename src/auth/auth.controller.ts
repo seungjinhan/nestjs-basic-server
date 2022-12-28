@@ -37,28 +37,24 @@ export class AuthController {
   // }
 
   @UseGuards(EmailPasswordCheckGuard)
-  @Post('token')
   @ApiOperation({ summary: '이메일, 패스워드로 로그인하고 Access Token 받기' })
-  @ApiResponse({ status: 200, description: '로그인성공' })
+  @Post('token')
   token(@Request() req) {
     return this.authService.getAccessToken(req.user);
   }
 
   @MUST_AUTH()
-  @Get('profile')
   @ApiOperation({ summary: '사용자 프로필 조회 (토큰필요)' })
-  @ApiResponse({ status: 200, description: '조회성공' })
   @ApiCreatedResponse({ type: UserEntity })
+  @Get('profile')
   profile(@Request() req) {
-    console.log(req);
     return req.user;
   }
 
   @MUST_AUTH()
-  @Get('find_token')
   @ApiOperation({ summary: '토큰 조회' })
-  @ApiResponse({ status: 200, description: '조회성공' })
   @ApiCreatedResponse({ type: TokenEntity })
+  @Get('find_token')
   findToken(@Query('user_id', ParseIntPipe) userId: number) {
     return this.authService.findToken(userId);
   }

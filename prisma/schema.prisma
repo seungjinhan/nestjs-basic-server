@@ -36,6 +36,21 @@ model Token{
   updated DateTime @updatedAt
 }
 
+model Files{
+  id    Int  @id @default(autoincrement())
+  originalname String 
+  encoding String
+  mimetype String
+  destination String
+  filename String
+  path String
+  size Int
+  more01 String
+  more02 String
+  created DateTime @default(now())
+  updated DateTime @updatedAt
+}
+
 enum Role{
   USER
   ADMIN

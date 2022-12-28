@@ -15,8 +15,8 @@ import { Cache } from 'cache-manager';
       useFactory: () => {
         return {
           store: redisStore,
-          host: 'localhost',
-          port: 6379,
+          host: process.env.REDIS_URL,
+          port: process.env.REDIS_PORT,
           ttl: 0,
         };
       },

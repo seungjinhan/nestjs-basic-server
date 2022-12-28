@@ -1,26 +1,31 @@
 import { Injectable } from '@nestjs/common';
+import * as fs from 'fs';
+
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
+import { PrismaService } from '../config/prisma/prisma.service';
 
 @Injectable()
 export class FilesService {
-  create(createFileDto: CreateFileDto) {
-    return 'This action adds a new file';
+  constructor(private readonly prisma: PrismaService) {}
+  async create(createFileDto: CreateFileDto) {
+    console.log(createFileDto);
+    return await this.prisma.files.create({ data: createFileDto });
   }
 
-  findAll() {
-    return `This action returns all files`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} file`;
+  async findOne(id: number) {
+    return await this.prisma.files.findUnique({ where: { id } });
   }
 
   update(id: number, updateFileDto: UpdateFileDto) {
-    return `This action updates a #${id} file`;
+    return this.prisma.files.update({ where: { id }, data: updateFileDto });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} file`;
+  async remove(id: number) {
+    const file = await this.findOne(id);
+    await fs.unlink(file.path, (err) => {
+      return err;
+    });
+    return await this.prisma.files.delete({ where: { id } });
   }
 }

@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { jwtConstants } from '../../authentication/jwt_constants';
 import { HttpStatus } from '@nestjs/common';
 import { MUST_AUTH_KEY } from './must.auth.decorator';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class MustAuthGuard implements CanActivate {
@@ -18,11 +19,12 @@ export class MustAuthGuard implements CanActivate {
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const mustAuthRes = this.reflector.getAllAndOverride(MUST_AUTH_KEY, [
+    const mustAuthRes = this.reflector.getAllAndOverride<Role>(MUST_AUTH_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
 
+    // 어노테이션이 없으면 누구나 호출가능
     if (mustAuthRes === undefined) {
       return true;
     }
@@ -36,7 +38,23 @@ export class MustAuthGuard implements CanActivate {
       res = this.jwtService.verify(token, {
         secret: jwtConstants.secret,
       });
-      context.switchToHttp().getRequest().user = res;
+      const userRole = res.role;
+      let roleFailMessage = '';
+      if (mustAuthRes === Role.ADMIN) {
+        if (userRole === Role.USER) {
+          roleFailMessage = 'Authorization Fail';
+        }
+      } else if (mustAuthRes === Role.SUPER) {
+        if (userRole === Role.USER || userRole === Role.ADMIN) {
+          roleFailMessage = 'Authorization Fail';
+        }
+      }
+
+      if (roleFailMessage !== '') {
+        throw new HttpException(roleFailMessage, HttpStatus.UNAUTHORIZED);
+      } else {
+        context.switchToHttp().getRequest().user = res;
+      }
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNAUTHORIZED);
     }
