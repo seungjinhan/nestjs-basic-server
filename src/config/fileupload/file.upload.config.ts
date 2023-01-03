@@ -1,17 +1,16 @@
 import { diskStorage } from 'multer';
 import { v4 as uuid } from 'uuid';
 
-import * as fs from 'fs';
-import path, { extname } from 'path';
-import { HttpException, HttpStatus } from '@nestjs/common';
+// import * as fs from 'fs';
+// import path, { extname } from 'path';
+// import { HttpException, HttpStatus } from '@nestjs/common';
 
-const validMimes: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
+// const validMimes: string[] = ['image/png', 'image/jpg', 'image/jpeg'];
 
 export const uploadImage = {
   storage: diskStorage({
     destination: './files',
     filename: (req, file, cb) => {
-      console.log(file);
       const filename: string = uuid();
       cb(null, filename);
     },

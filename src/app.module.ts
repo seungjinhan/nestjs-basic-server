@@ -19,12 +19,16 @@ import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
+    // EasyconfigModule.register({
+    //   path: `.env.${process.env.NODE_ENV}`,
+    //   safe: true,
+    // }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'static'),
       exclude: ['/api*', '/docs*'],
     }),
     ConfigModule,
-    ConfigModule.forRoot({ envFilePath: ['.env'] }),
+    ConfigModule.forRoot({ envFilePath: [`.env.${process.env.NODE_ENV}`] }),
     ThrottlerModule.forRoot({
       ttl: 60,
       limit: 10,
