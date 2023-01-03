@@ -8,17 +8,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { EmailPasswordCheckGuard } from '@src/config/authentication/local-auth.guard';
+import { EmailPasswordCheckGuard } from '@config/guards/email.pw/email.pw-auth.guard';
 import { UserEntity } from '../user/entities/user.entity';
 import { ApiCreatedResponse } from '@nestjs/swagger';
 import { TokenEntity } from './entities/auth.entity';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { MUST_AUTH } from '@config/annotations/authCheck/must.auth.decorator';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { MUST_AUTH } from '@config/annotations/must.auth/must.auth.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Auth')

@@ -1,28 +1,28 @@
 import { join } from 'path';
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from '@nestjs/config';
-
+import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from '@config/prisma/prisma.module';
+import { JwtModule } from '@nestjs/jwt';
 
 import { UserModule } from '@src/user/user.module';
 import { AuthModule } from '@src/auth/auth.module';
 import { LoggingInterceptor } from '@src/config/interceptors/logger.interceptor';
 import { SampleModule } from '@src/sample/sample.module';
-import { FilesModule } from './files/files.module';
-import { ThrottlerModule } from '@nestjs/throttler';
-import { CacheModule } from './config/cache/cache.module';
-import { AuthInterceptor } from './config/interceptors/auth.interceptor';
-import { MustAuthGuard } from './config/annotations/authCheck/must.auth.guard';
-import { JwtModule } from '@nestjs/jwt';
+import { CacheModule } from '@src/config/cache/cache.module';
+import { MustAuthGuard } from '@config/guards/must.auth/must.auth.guard';
+import { FilesModule } from '@src/files/files.module';
+import { LoggerMiddleware } from './config/middleware/logger.middleware';
 
 @Module({
   imports: [
-    // EasyconfigModule.register({
-    //   path: `.env.${process.env.NODE_ENV}`,
-    //   safe: true,
-    // }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'static'),
       exclude: ['/api*', '/docs*'],
@@ -49,13 +49,15 @@ import { JwtModule } from '@nestjs/jwt';
       useClass: LoggingInterceptor,
     },
     {
-      provide: APP_INTERCEPTOR,
-      useClass: AuthInterceptor,
-    },
-    {
       provide: APP_GUARD,
       useClass: MustAuthGuard,
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}

@@ -1,9 +1,8 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { LOGGER } from './config/middleware/logger.middleware';
-import { HttpExceptionFilter } from './config/filters/http.exception.filter';
+import { AppModule } from '@src/app.module';
+import { HttpExceptionFilter } from '@src/config/filters/http.exception.filter';
 import { ValidationPipe } from '@nestjs/common';
-import { setSwagger } from './config/swagger/config';
+import { setSwagger } from '@src/config/swagger/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -14,7 +13,6 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.enableShutdownHooks();
 
-  app.use(LOGGER);
   app.setGlobalPrefix('/api');
 
   app.useGlobalFilters(new HttpExceptionFilter());

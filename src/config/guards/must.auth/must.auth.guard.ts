@@ -8,7 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants } from '../../authentication/jwt_constants';
 import { HttpStatus } from '@nestjs/common';
-import { MUST_AUTH_KEY } from './must.auth.decorator';
+import { MUST_AUTH_KEY } from '../../annotations/must.auth/must.auth.decorator';
 import { Role } from '@prisma/client';
 
 @Injectable()

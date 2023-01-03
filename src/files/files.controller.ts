@@ -9,7 +9,6 @@ import {
   StreamableFile,
   Response,
   ParseIntPipe,
-  Query,
   ParseFilePipeBuilder,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
