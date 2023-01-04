@@ -1,4 +1,6 @@
 import { NestFactory } from '@nestjs/core';
+import * as csurf from 'csurf';
+
 import { AppModule } from '@src/app.module';
 import { HttpExceptionFilter } from '@src/config/filters/http.exception.filter';
 import { ValidationPipe } from '@nestjs/common';
@@ -10,6 +12,7 @@ async function bootstrap() {
   });
 
   app.enableCors();
+  app.use(csurf());
   app.useGlobalPipes(new ValidationPipe());
   app.enableShutdownHooks();
 
