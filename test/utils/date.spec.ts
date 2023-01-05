@@ -1,38 +1,50 @@
-import { date, now } from '../../src/utils/date';
-import { add, nowString, DateAddType, addFromDate } from '../../src/utils/date';
+import MomentDate, { DateAddType } from '../../src/utils/date';
+('../../src/utils/date');
 import * as moment from 'moment';
 
 describe('Date 테스트', () => {
   test('날짜 객체 만들기', () => {
-    const n = date('2023-01-05');
+    const n = MomentDate.date('2023-01-05');
     expect(n.format('YYYYMMDD')).toBe('20230105');
   });
   test('현재 시간', () => {
-    const n = nowString('YYYYMMDD');
+    const n = MomentDate.nowString('YYYYMMDD');
     expect(Number.parseInt(n.slice(-2)) + '').toBe(
       new Date().getDate().toString(),
     );
   });
   test('현재 시간 폴더', () => {
-    const n = nowString('YYYY/MM/DD');
+    const n = MomentDate.nowString('YYYY/MM/DD');
     console.log(n);
     expect(Number.parseInt(n.slice(-2)) + '').toBe(
       new Date().getDate().toString(),
     );
   });
   test('날짜 더하기', () => {
-    const res = add(3, DateAddType.days);
-    const n = nowString('YYYYMMDD');
+    const res = MomentDate.add(3, DateAddType.days);
+    const n = MomentDate.nowString('YYYYMMDD');
     console.log(n, res.format('YYYYMMDD'));
     expect(true).toBeTruthy;
   });
 
   test('날짜 더하기', () => {
-    const res = addFromDate(date('2023-01-01'), 10, DateAddType.days);
-    expect(res.format('YYYYMMDD')).toBe(date('2023-01-11').format('YYYYMMDD'));
+    const res = MomentDate.addFromDate(
+      MomentDate.date('2023-01-01'),
+      10,
+      DateAddType.days,
+    );
+    expect(res.format('YYYYMMDD')).toBe(
+      MomentDate.date('2023-01-11').format('YYYYMMDD'),
+    );
   });
   test('날짜 빼기', () => {
-    const res = addFromDate(date('2023-01-10'), -2, DateAddType.days);
-    expect(res.format('YYYYMMDD')).toBe(date('2023-01-08').format('YYYYMMDD'));
+    const res = MomentDate.addFromDate(
+      MomentDate.date('2023-01-10'),
+      -2,
+      DateAddType.days,
+    );
+    expect(res.format('YYYYMMDD')).toBe(
+      MomentDate.date('2023-01-08').format('YYYYMMDD'),
+    );
   });
 });

@@ -1,5 +1,5 @@
 import { diskStorage } from 'multer';
-import { nowString } from '@src/utils/date';
+import momentDate from '@src/utils/date';
 import { v4 as uuid } from 'uuid';
 
 // import * as fs from 'fs';
@@ -10,7 +10,7 @@ import { v4 as uuid } from 'uuid';
 
 export const uploadImage = {
   storage: diskStorage({
-    destination: `./files/${nowString('YYYY/MM/DD')}`,
+    destination: `./files/${momentDate.nowString('YYYY/MM/DD')}`,
     filename: (req, file, cb) => {
       const filename: string = uuid();
       cb(null, filename);
