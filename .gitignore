@@ -38,3 +38,5 @@ lerna-debug.log*
 /files
 package-lock.json
 .gitignore
+
+/documentation

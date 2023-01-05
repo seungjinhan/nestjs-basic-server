@@ -3,8 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '../config/prisma/prisma.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Cache } from 'cache-manager';
-
-export type User = any;
+import { UserEntity } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -17,8 +16,7 @@ export class UserService {
     return this.prisma.user.create({ data: user });
   }
 
-  async findAll() {
-    await this.cache.set('good', 'sdfsdfsdfsdsdf');
+  async findAll(): Promise<UserEntity[]> {
     return this.prisma.user.findMany();
   }
 
@@ -26,7 +24,7 @@ export class UserService {
     console.log('findOne Server');
     return this.prisma.user.findUnique({ where: { id } });
   }
-  async findOneByEmail(email: string): Promise<User | undefined> {
+  async findOneByEmail(email: string): Promise<UserEntity | undefined> {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
