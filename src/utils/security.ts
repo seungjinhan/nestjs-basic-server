@@ -21,7 +21,7 @@ const Security = {
    * @param text
    * @returns
    */
-  encryptData: async (data) => {
+  encryptData: async (data): Promise<Buffer> => {
     const iv = randomBytes(16);
     const cipher = createCipheriv(Security.alg, Security.key, iv);
     const result = Buffer.concat([iv, cipher.update(data), cipher.final()]);
@@ -33,7 +33,7 @@ const Security = {
    * @param text
    * @returns
    */
-  decryptData: async (_data) => {
+  decryptData: async (_data): Promise<string> => {
     const iv = _data.slice(0, 16);
     const data = _data.slice(16);
     const decipher = createDecipheriv(Security.alg, Security.key, iv),
@@ -46,7 +46,7 @@ const Security = {
    * @param data
    * @returns
    */
-  bcryptData: async (data) => {
+  bcryptData: async (data): Promise<string> => {
     const saltOrRounds = 10;
     const hash = await bcrypt.hash(data, saltOrRounds);
     return hash;
@@ -58,7 +58,7 @@ const Security = {
    * @param data 원본데이터
    * @returns
    */
-  compareBcryptData: async (hash, data) => {
+  compareBcryptData: async (hash, data): Promise<boolean> => {
     return await bcrypt.compare(data, hash);
   },
 };
