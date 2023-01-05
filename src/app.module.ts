@@ -33,6 +33,7 @@ import { LoggerMiddleware } from './config/middleware/http.logger.middleware';
       ttl: 60,
       limit: 10,
     }),
+
     PrismaModule,
     CacheModule,
     JwtModule,
