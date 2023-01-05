@@ -19,7 +19,7 @@ import { SampleModule } from '@src/sample/sample.module';
 import { CacheModule } from '@src/config/cache/cache.module';
 import { MustAuthGuard } from '@config/guards/must.auth/must.auth.guard';
 import { FilesModule } from '@src/files/files.module';
-import { LoggerMiddleware } from './config/middleware/logger.middleware';
+import { LoggerMiddleware } from './config/middleware/http.logger.middleware';
 
 @Module({
   imports: [

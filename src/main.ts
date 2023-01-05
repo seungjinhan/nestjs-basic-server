@@ -4,7 +4,7 @@ import * as csurf from 'csurf';
 import { AppModule } from '@src/app.module';
 import { HttpExceptionFilter } from '@src/config/filters/http.exception.filter';
 import { ValidationPipe } from '@nestjs/common';
-import { setSwagger } from '@src/config/swagger/config';
+import { setSwagger } from '@config/swagger/swagger.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -12,7 +12,6 @@ async function bootstrap() {
   });
 
   app.enableCors();
-  app.use(csurf());
   app.useGlobalPipes(new ValidationPipe());
   app.enableShutdownHooks();
 
