@@ -16,5 +16,6 @@ import { RedisvController } from './redisv.controller';
   ],
   controllers: [RedisvController],
   providers: [RedisvService],
+  exports: [RedisvService],
 })
 export class RedisvModule {}

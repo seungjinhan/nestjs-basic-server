@@ -51,6 +51,16 @@ export class RedisvService {
   /**
    *
    * @param key
+   * @param mapKey
+   * @returns
+   */
+  delMap(key: string, mapKey: string) {
+    return this.redis.hdel(key, mapKey);
+  }
+
+  /**
+   *
+   * @param key
    * @returns
    */
   async isKey(key: string): Promise<boolean> {

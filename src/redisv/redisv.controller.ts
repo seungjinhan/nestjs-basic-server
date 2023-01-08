@@ -33,10 +33,10 @@ export class RedisvController {
   }
 
   /**
-   *
-   * @param key
-   * @param type
-   * @param mapKey
+   * 레디스에서 데이터 조회
+   * @param key 데이터키
+   * @param type 테이터 타입
+   * @param mapKey 맵일 경우 맵의 키
    * @returns
    */
   @Get()
