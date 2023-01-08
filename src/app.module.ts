@@ -20,6 +20,8 @@ import { CacheModule } from '@src/config/cache/cache.module';
 import { MustAuthGuard } from '@config/guards/must.auth/must.auth.guard';
 import { FilesModule } from '@src/files/files.module';
 import { LoggerMiddleware } from './config/middleware/http.logger.middleware';
+import { SessionModule } from './session/session.module';
+import { RedisvModule } from './redisv/redisv.module';
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import { LoggerMiddleware } from './config/middleware/http.logger.middleware';
     AuthModule,
     SampleModule,
     FilesModule,
+    SessionModule,
+    RedisvModule,
   ],
   controllers: [],
   providers: [

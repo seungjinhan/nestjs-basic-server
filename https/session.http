@@ -1,0 +1,11 @@
+@hostname = 127.0.0.1
+@port = 9999
+@host = http://{{hostname}}:{{port}}/api
+@contentType = application/json
+@Context = session
+@hostContext = {{host}}/{{Context}}
+###
+
+###
+POST {{hostContext}} HTTP/1.1
+

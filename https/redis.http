@@ -1,0 +1,25 @@
+@hostname = 127.0.0.1
+@port = 9999
+@host = http://{{hostname}}:{{port}}/api
+@contentType = application/json
+@Context = redisv
+@hostContext = {{host}}/{{Context}}
+###
+
+###
+POST {{hostContext}} HTTP/1.1
+content-type: application/json
+
+{
+    "key":"name",
+    "value":"1234"
+}
+
+###
+GET {{hostContext}}?key=session&type=STRING HTTP/1.1
+
+###
+DELETE {{hostContext}}/session HTTP/1.1
+
+###
+GET {{hostContext}}/isKey/good HTTP/1.1

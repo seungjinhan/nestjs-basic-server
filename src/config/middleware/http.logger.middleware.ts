@@ -22,18 +22,19 @@ export class LoggerMiddleware implements NestMiddleware {
 
     const send = response.send;
     response.send = (exitData) => {
-      if (
-        response
-          ?.getHeader('content-type')
-          ?.toString()
-          .includes('application/json')
-      ) {
-        console.log({
-          code: response.statusCode,
-          exit: exitData.toString().substring(0, 1000),
-          endDate: new Date(),
-        });
-      }
+      // if (
+      //   response
+      //     ?.getHeader('content-type')
+      //     ?.toString()
+      //     .includes('application/json')
+      // ) {
+      //   console.log({
+      //     code: response.statusCode,
+      //     exit: exitData.toString().substring(0, 1000),
+      //     endDate: new Date(),
+      //   });
+      // }
+
       response.send = send;
       return response.send(exitData);
     };

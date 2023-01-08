@@ -5,6 +5,7 @@ import {
   Logger,
   ExceptionFilter,
 } from '@nestjs/common';
+import { makeResponse } from '@src/utils/api';
 import { Request, Response } from 'express';
 
 @Catch(HttpException)
@@ -20,11 +21,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     this.logger.error(res);
 
-    response.status(status).json({
-      statusCode: status,
-      timestamp: new Date().toISOString(),
-      path: request.url,
-      data: res,
-    });
+    response.status(status).json(
+      makeResponse(false, {
+        statusCode: status,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+        data: res,
+      }),
+    );
   }
 }
