@@ -1,4 +1,11 @@
-import { Controller, Delete, Get, Post } from '@nestjs/common';
+import {
+  CacheKey,
+  CacheTTL,
+  Controller,
+  Delete,
+  Get,
+  Post,
+} from '@nestjs/common';
 import { SessionService } from './session.service';
 
 @Controller('session')
@@ -11,6 +18,8 @@ export class SessionController {
     return this.sessionService.setSession(1, 'asdfsd');
   }
 
+  @CacheKey('session_get')
+  @CacheTTL(20)
   @Get()
   get() {
     return this.sessionService.getSession(1);

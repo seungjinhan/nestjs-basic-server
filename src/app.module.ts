@@ -22,6 +22,7 @@ import { FilesModule } from '@src/files/files.module';
 import { LoggerMiddleware } from './config/middleware/http.logger.middleware';
 import { SessionModule } from './session/session.module';
 import { RedisvModule } from './redisv/redisv.module';
+import { CacheInterceptor } from '@nestjs/common';
 
 @Module({
   imports: [
@@ -56,6 +57,10 @@ import { RedisvModule } from './redisv/redisv.module';
     {
       provide: APP_GUARD,
       useClass: MustAuthGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CacheInterceptor,
     },
   ],
 })

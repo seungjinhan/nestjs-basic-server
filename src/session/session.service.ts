@@ -20,7 +20,7 @@ export class SessionService {
    * @returns
    */
   __makeKey = (userId) => {
-    return `session.${userId}`;
+    return `s.${userId}`;
   };
 
   /**
