@@ -1,0 +1,10 @@
+@hostname = 127.0.0.1
+@port = 9999
+@host = http://{{hostname}}:{{port}}/api
+@contentType = application/json
+@Context = events
+@hostContext = {{host}}/{{Context}}
+###
+
+###
+GET {{hostContext}}/call2 HTTP/1.1

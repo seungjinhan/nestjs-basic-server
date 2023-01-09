@@ -23,6 +23,11 @@ import { LoggerMiddleware } from './config/middleware/http.logger.middleware';
 import { SessionModule } from './session/session.module';
 import { RedisvModule } from './redisv/redisv.module';
 import { CacheInterceptor } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ScheduleModule as MyScheduleModule } from '@src/schedule/schedule.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { HttpModule } from '@nestjs/axios';
+import { SocketServerGateway } from './socket.server/socket.server.gateway';
 
 @Module({
   imports: [
@@ -36,11 +41,14 @@ import { CacheInterceptor } from '@nestjs/common';
       ttl: 60,
       limit: 10,
     }),
-
+    ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
     PrismaModule,
     CacheModule,
     JwtModule,
+    HttpModule,
     /////////////////////////////////////////////////////////////////////
+    MyScheduleModule,
     UserModule,
     AuthModule,
     SampleModule,
@@ -62,6 +70,7 @@ import { CacheInterceptor } from '@nestjs/common';
       provide: APP_INTERCEPTOR,
       useClass: CacheInterceptor,
     },
+    SocketServerGateway,
   ],
 })
 export class AppModule implements NestModule {
