@@ -41,7 +41,7 @@ export class AuthController {
   async token(@Request() req, @Res({ passthrough: true }) res: Response) {
     const sessionKey = await this.authService.getSessionKey(req.user);
 
-    new CookieUtil().setSession({ res: res, value: sessionKey });
+    CookieUtil.setSession({ res: res, value: sessionKey });
 
     return makeResponse(true);
   }

@@ -12,10 +12,10 @@ export enum DateAddType {
   milliseconds = 'ms',
 }
 
-export class MomentDate {
-  date = (day = ''): moment.Moment => {
+export const MomentDate = {
+  date: (day = ''): moment.Moment => {
     return moment(day);
-  };
+  },
 
   /**
    *
@@ -38,18 +38,18 @@ export class MomentDate {
    * @param format 포멧
    * @returns
    */
-  nowString = (format: string): string => {
+  nowString: (format: string): string => {
     return moment().format(format);
-  };
+  },
 
   /**
    * 날짜객체 반환
    * @param dateString 날짜 스트링문자열
    * @returns
    */
-  now = (): moment.Moment => {
+  now: (): moment.Moment => {
     return moment();
-  };
+  },
 
   /**
    * 현재 시간 기준으로 더하기
@@ -57,9 +57,9 @@ export class MomentDate {
    * @param type
    * @returns
    */
-  add = (num: number, type: DateAddType): moment.Moment => {
+  add: (num: number, type: DateAddType): moment.Moment => {
     return moment().add(num, type);
-  };
+  },
 
   /**
    * 기준날짜에서 더하기
@@ -68,18 +68,16 @@ export class MomentDate {
    * @param type 타입
    * @returns
    */
-  addFromDate = (
+  addFromDate: (
     day: moment.Moment,
     num: number,
     type: DateAddType,
   ): moment.Moment => {
     return moment(day).add(num, type);
-  };
-}
+  },
+};
 
-export default MomentDate;
-
-// export const date = (day = '') => {
+// export const date : (day = '') => {
 //   return moment(day);
 // };
 // /**

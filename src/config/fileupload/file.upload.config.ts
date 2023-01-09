@@ -10,7 +10,7 @@ import { v4 as uuid } from 'uuid';
 
 export const uploadImage = {
   storage: diskStorage({
-    destination: `./files/${new MomentDate().nowString('YYYY/MM/DD')}`,
+    destination: `./files/${MomentDate.nowString('YYYY/MM/DD')}`,
     filename: (req, file, cb) => {
       const filename: string = uuid();
       cb(null, filename);

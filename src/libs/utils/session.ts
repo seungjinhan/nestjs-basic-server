@@ -10,19 +10,20 @@ interface CookieParams {
 /**
  *
  */
-export class CookieUtil {
-  session_key = 'SESSION_KEY';
+export const CookieUtil = {
+  session_key: 'SESSION_KEY',
   set({ res, key, value }: CookieParams) {
     res.cookie(key, value);
-  }
-  get({ req, key }: CookieParams) {
+  },
+  get: ({ req, key }: CookieParams) => {
     return req.cookies[key];
-  }
+  },
 
-  setSession({ res, value }: CookieParams) {
-    res.cookie(this.session_key, value);
-  }
+  setSession: ({ res, value }: CookieParams) => {
+    res.cookie(CookieUtil.session_key, value);
+  },
+
   getSession({ req }: CookieParams) {
     return req.cookies[this.session_key];
-  }
-}
+  },
+};

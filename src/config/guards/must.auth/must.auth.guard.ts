@@ -38,7 +38,7 @@ export class MustAuthGuard implements CanActivate {
     //   .headers.authorization;
     // token = token.replace('Bearer ', '');
 
-    const key = new CookieUtil().getSession({
+    const key = CookieUtil.getSession({
       req: context.switchToHttp().getRequest(),
     });
 
