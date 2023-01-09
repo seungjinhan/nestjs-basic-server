@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { RedisvService } from './redisv.service';
 import { CreateRedisvDto } from './dto/create-redisv.dto';
-import { APIReturnType, makeResponse } from '@src/libs/utils/api';
+import { APIReturnType, makeResponse } from '../libs/utils/api';
 
 export interface RedisGetType {
   key: string;

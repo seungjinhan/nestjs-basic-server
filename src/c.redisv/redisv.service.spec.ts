@@ -23,7 +23,7 @@ describe('RedisvService', () => {
     expect(service).toBeDefined();
   });
 
-  // it('처음 테스트', () => {
-  //   expect(2 + 4).toEqual(6);
-  // });
+  it('처음 테스트', () => {
+    expect(2 + 4).toEqual(6);
+  });
 });

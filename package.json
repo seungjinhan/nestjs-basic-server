@@ -112,14 +112,6 @@
     "roots": [
       "<rootDir>/test/",
       "<rootDir>/src/"
-    ],
-    "paths": {
-      "@config/*": [
-        "src/config/*"
-      ],
-      "@src/*": [
-        "src/*"
-      ]
-    }
+    ]
   }
 }

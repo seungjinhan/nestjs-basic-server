@@ -1,5 +1,5 @@
 import { diskStorage } from 'multer';
-import { MomentDate } from '@src/libs/utils/date';
+import { MomentDate } from '../../libs/utils/date';
 import { v4 as uuid } from 'uuid';
 
 // import * as fs from 'fs';
