@@ -1,4 +1,4 @@
-import Security from '../../src/libs/utils/security';
+import { Security } from '../../src/libs/utils/security';
 
 describe('보안 테스트', () => {
   test('양방향 암호화 비교', async () => {

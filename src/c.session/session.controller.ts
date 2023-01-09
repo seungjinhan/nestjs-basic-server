@@ -14,7 +14,6 @@ export class SessionController {
 
   @Post()
   add() {
-    console.log('dd');
     return this.sessionService.setSession(1, 'asdfsd');
   }
 

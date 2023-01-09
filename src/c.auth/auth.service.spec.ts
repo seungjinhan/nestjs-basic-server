@@ -1,12 +1,29 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { JwtService } from '@nestjs/jwt';
+
 import { AuthService } from './auth.service';
+import { UserService } from '../c.user/user.service';
+import { SessionService } from '../c.session/session.service';
+import { PrismaService } from '../config/prisma/prisma.service';
+import { RedisvService } from '../c.redisv/redisv.service';
+import { RedisModule } from '@nestjs-modules/ioredis';
 
 describe('AuthService', () => {
   let service: AuthService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthService],
+      providers: [
+        AuthService,
+        UserService,
+        SessionService,
+        PrismaService,
+        JwtService,
+        {
+          provide: RedisvService,
+          useClass: RedisModule,
+        },
+      ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);

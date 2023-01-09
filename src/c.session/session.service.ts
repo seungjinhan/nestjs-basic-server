@@ -1,14 +1,10 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
-import { Cache } from 'cache-manager';
+import { Injectable } from '@nestjs/common';
 import { RedisvService } from '../c.redisv/redisv.service';
-import { Security } from '@src/libs/utils/security';
+import { Security } from '../libs/utils/security';
 
 @Injectable()
 export class SessionService {
-  constructor(
-    @Inject(CACHE_MANAGER) private readonly cache: Cache,
-    private readonly redisService: RedisvService,
-  ) {}
+  constructor(private readonly redisService: RedisvService) {}
 
   /**
    * 세션 레디스 키

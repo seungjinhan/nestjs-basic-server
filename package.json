@@ -110,7 +110,16 @@
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
     "roots": [
-      "<rootDir>/test/"
-    ]
+      "<rootDir>/test/",
+      "<rootDir>/src/"
+    ],
+    "paths": {
+      "@config/*": [
+        "src/config/*"
+      ],
+      "@src/*": [
+        "src/*"
+      ]
+    }
   }
 }

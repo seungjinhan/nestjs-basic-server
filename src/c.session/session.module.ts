@@ -1,15 +1,14 @@
 import { Module } from '@nestjs/common';
 
-import { CacheModule } from '@config/cache/cache.module';
-
 import { SessionController } from '@src/c.session/session.controller';
 import { SessionService } from '@src/c.session/session.service';
 import { RedisvModule } from '@src/c.redisv/redisv.module';
+import { RedisvService } from '@src/c.redisv/redisv.service';
 
 @Module({
-  imports: [CacheModule, RedisvModule],
+  imports: [RedisvModule],
   controllers: [SessionController],
-  providers: [SessionService],
+  providers: [SessionService, RedisvService],
   exports: [SessionService],
 })
 export class SessionModule {}

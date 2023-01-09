@@ -1,6 +1,4 @@
-import MomentDate, { DateAddType } from '../../src/libs/utils/date';
-('../../src/utils/date');
-import * as moment from 'moment';
+import { DateAddType, MomentDate } from '../../src/libs/utils/date';
 
 describe('Date 테스트', () => {
   test('날짜 객체 만들기', () => {

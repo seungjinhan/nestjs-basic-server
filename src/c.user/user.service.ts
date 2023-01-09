@@ -7,10 +7,7 @@ import { UserEntity } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly prisma: PrismaService,
-    @Inject(CACHE_MANAGER) private readonly cache: Cache,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   create(user: CreateUserDto) {
     return this.prisma.user.create({ data: user });

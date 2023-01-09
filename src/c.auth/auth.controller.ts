@@ -8,16 +8,17 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { EmailPasswordCheckGuard } from '@config/guards/email.pw/email.pw-auth.guard';
-import { UserEntity } from '../c.user/entities/user.entity';
 import { ApiCreatedResponse } from '@nestjs/swagger';
-import { TokenEntity } from './entities/auth.entity';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { MUST_AUTH } from '@config/annotations/must.auth/must.auth.decorator';
 import { Response } from 'express';
-import { makeResponse } from '@src/libs/utils/api';
-import { CookieUtil } from '@src/libs/utils/session';
+
+import { AuthService } from './auth.service';
+import { EmailPasswordCheckGuard } from '../config/guards/email.pw/email.pw-auth.guard';
+import { UserEntity } from '../c.user/entities/user.entity';
+import { TokenEntity } from './entities/auth.entity';
+import { MUST_AUTH } from '../config/annotations/must.auth/must.auth.decorator';
+import { makeResponse } from '../libs/utils/api';
+import { CookieUtil } from '../libs/utils/session';
 
 @ApiBearerAuth()
 @ApiTags('Auth')
