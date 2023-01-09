@@ -5,6 +5,7 @@ import {
   Post,
   Query,
   Request,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -14,6 +15,9 @@ import { ApiCreatedResponse } from '@nestjs/swagger';
 import { TokenEntity } from './entities/auth.entity';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MUST_AUTH } from '@config/annotations/must.auth/must.auth.decorator';
+import { Response } from 'express';
+import { makeResponse } from '@src/libs/utils/api';
+import { CookieUtil } from '@src/libs/utils/session';
 
 @ApiBearerAuth()
 @ApiTags('Auth')
@@ -34,8 +38,12 @@ export class AuthController {
   @UseGuards(EmailPasswordCheckGuard)
   @ApiOperation({ summary: '이메일, 패스워드로 로그인하고 Access Token 받기' })
   @Post('token')
-  token(@Request() req) {
-    return this.authService.getAccessToken(req.user);
+  async token(@Request() req, @Res({ passthrough: true }) res: Response) {
+    const sessionKey = await this.authService.getSessionKey(req.user);
+
+    new CookieUtil().setSession({ res: res, value: sessionKey });
+
+    return makeResponse(true);
   }
 
   @MUST_AUTH()

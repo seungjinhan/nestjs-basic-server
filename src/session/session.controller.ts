@@ -22,7 +22,7 @@ export class SessionController {
   @CacheTTL(20)
   @Get()
   get() {
-    return this.sessionService.getSession(1);
+    return this.sessionService.getSessionByUserId(1);
   }
 
   @Delete()

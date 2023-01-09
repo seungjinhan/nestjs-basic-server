@@ -7,9 +7,11 @@ import { jwtConstants } from '@src/config/authentication/jwt_constants';
 import { UserModule } from '@src/user/user.module';
 import { AuthService } from './auth.service';
 import { PrismaModule } from '../config/prisma/prisma.module';
+import { SessionModule } from '../session/session.module';
 
 @Module({
   imports: [
+    SessionModule,
     PrismaModule,
     UserModule,
     PassportModule,

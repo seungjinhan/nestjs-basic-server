@@ -10,5 +10,6 @@ import { RedisvModule } from '@src/redisv/redisv.module';
   imports: [CacheModule, RedisvModule],
   controllers: [SessionController],
   providers: [SessionService],
+  exports: [SessionService],
 })
 export class SessionModule {}

@@ -1,4 +1,4 @@
-import MomentDate, { DateAddType } from '../../src/utils/date';
+import MomentDate, { DateAddType } from '../../src/libs/utils/date';
 ('../../src/utils/date');
 import * as moment from 'moment';
 

@@ -10,15 +10,20 @@ import { jwtConstants } from '../../authentication/jwt_constants';
 import { HttpStatus } from '@nestjs/common';
 import { MUST_AUTH_KEY } from '../../annotations/must.auth/must.auth.decorator';
 import { Role } from '@prisma/client';
+import { CookieUtil } from '../../../libs/utils/session';
+import { SessionService } from '../../../session/session.service';
+import e from 'express';
+import { StringUtil } from '../../../libs/utils/string';
 
 @Injectable()
 export class MustAuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly jwtService: JwtService,
+    private readonly sessionService: SessionService,
   ) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const mustAuthRes = this.reflector.getAllAndOverride<Role>(MUST_AUTH_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -29,15 +34,32 @@ export class MustAuthGuard implements CanActivate {
       return true;
     }
 
-    let token: string = context.switchToHttp().getRequest()
-      .headers.authorization;
-    token = token.replace('Bearer ', '');
+    // let token: string = context.switchToHttp().getRequest()
+    //   .headers.authorization;
+    // token = token.replace('Bearer ', '');
+
+    const key = new CookieUtil().getSession({
+      req: context.switchToHttp().getRequest(),
+    });
+
+    if (!StringUtil.isNotEmpty(key)) {
+      throw new HttpException('key is null', HttpStatus.UNAUTHORIZED);
+    }
+    const token: any = await this.sessionService.getSessionBySessionKey(key);
+
+    if (!StringUtil.isNotEmpty(token)) {
+      throw new HttpException('Wrong session key', HttpStatus.UNAUTHORIZED);
+    }
+    const realToken: string = token.split('|')[1];
 
     let res;
+
     try {
-      res = this.jwtService.verify(token, {
+      // 토큰에서 사용자 정보를 꺼낸다.
+      res = this.jwtService.verify(realToken, {
         secret: jwtConstants.secret,
       });
+
       const userRole = res.role;
       let roleFailMessage = '';
       if (mustAuthRes === Role.ADMIN) {

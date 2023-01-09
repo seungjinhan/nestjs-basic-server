@@ -5,7 +5,7 @@ import {
   Logger,
   ExceptionFilter,
 } from '@nestjs/common';
-import { makeResponse } from '@src/utils/api';
+import { makeResponse } from '@src/libs/utils/api';
 import { Request, Response } from 'express';
 
 @Catch(HttpException)

@@ -9,9 +9,9 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { PrismaModule } from '@config/prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
 
+import { PrismaModule } from '@src/config/prisma/prisma.module';
 import { UserModule } from '@src/user/user.module';
 import { AuthModule } from '@src/auth/auth.module';
 import { LoggingInterceptor } from '@src/config/interceptors/logger.interceptor';

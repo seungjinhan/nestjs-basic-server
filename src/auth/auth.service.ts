@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { UserEntity } from '../user/entities/user.entity';
-import { PrismaService } from '../config/prisma/prisma.service';
+import { UserEntity } from '@src/user/entities/user.entity';
+import { PrismaService } from '@src/config/prisma/prisma.service';
+import { SessionService } from '@src/session/session.service';
 
 export type Token = any;
 
@@ -10,6 +11,7 @@ export type Token = any;
 export class AuthService {
   constructor(
     private readonly userService: UserService,
+    private readonly sessionService: SessionService,
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
   ) {}
@@ -32,15 +34,18 @@ export class AuthService {
   /**
    * access_token 생성하기
    * @param user
-   * @returns
+   * @returns sessionKey
    */
-  async getAccessToken(user: UserEntity) {
+  async getSessionKey(user: UserEntity): Promise<string> {
     const payload = { email: user.email, id: user.id, role: user.role };
     const token = this.jwtService.sign(payload);
+
     this.__insertToken(user, token);
-    return {
-      access_token: token,
-    };
+
+    // 세션에 저장
+    const sessionKey = await this.sessionService.setSession(user.id, token);
+
+    return sessionKey;
   }
 
   /**
