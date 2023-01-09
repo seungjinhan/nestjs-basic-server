@@ -4,10 +4,10 @@ import { PassportModule } from '@nestjs/passport';
 import { EmailpwStrategy } from '@config/guards/email.pw/email.pw.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from '@src/config/authentication/jwt_constants';
-import { UserModule } from '@src/user/user.module';
+import { UserModule } from '@src/c.user/user.module';
 import { AuthService } from './auth.service';
 import { PrismaModule } from '../config/prisma/prisma.module';
-import { SessionModule } from '../session/session.module';
+import { SessionModule } from '../c.session/session.module';
 
 @Module({
   imports: [

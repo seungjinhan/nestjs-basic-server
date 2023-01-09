@@ -12,22 +12,22 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { JwtModule } from '@nestjs/jwt';
 
 import { PrismaModule } from '@src/config/prisma/prisma.module';
-import { UserModule } from '@src/user/user.module';
-import { AuthModule } from '@src/auth/auth.module';
+import { UserModule } from '@src/c.user/user.module';
+import { AuthModule } from '@src/c.auth/auth.module';
 import { LoggingInterceptor } from '@src/config/interceptors/logger.interceptor';
 import { SampleModule } from '@src/sample/sample.module';
 import { CacheModule } from '@src/config/cache/cache.module';
 import { MustAuthGuard } from '@config/guards/must.auth/must.auth.guard';
-import { FilesModule } from '@src/files/files.module';
+import { FilesModule } from '@src/c.files/files.module';
 import { LoggerMiddleware } from './config/middleware/http.logger.middleware';
-import { SessionModule } from './session/session.module';
-import { RedisvModule } from './redisv/redisv.module';
+import { SessionModule } from './c.session/session.module';
+import { RedisvModule } from './c.redisv/redisv.module';
 import { CacheInterceptor } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ScheduleModule as MyScheduleModule } from '@src/schedule/schedule.module';
+import { ScheduleModule as MyScheduleModule } from '@src/c.schedule/schedule.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { HttpModule } from '@nestjs/axios';
-import { SocketServerGateway } from './socket.server/socket.server.gateway';
+import { SocketServerGateway } from './c.socket.server/socket.server.gateway';
 
 @Module({
   imports: [

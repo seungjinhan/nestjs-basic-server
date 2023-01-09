@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { EmailPasswordCheckGuard } from '@config/guards/email.pw/email.pw-auth.guard';
-import { UserEntity } from '../user/entities/user.entity';
+import { UserEntity } from '../c.user/entities/user.entity';
 import { ApiCreatedResponse } from '@nestjs/swagger';
 import { TokenEntity } from './entities/auth.entity';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';

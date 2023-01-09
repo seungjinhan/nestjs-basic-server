@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { UserService } from '../user/user.service';
+import { UserService } from '../c.user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { UserEntity } from '@src/user/entities/user.entity';
+import { UserEntity } from '@src/c.user/entities/user.entity';
 import { PrismaService } from '@src/config/prisma/prisma.service';
-import { SessionService } from '@src/session/session.service';
+import { SessionService } from '@src/c.session/session.service';
 
 export type Token = any;
 

@@ -1,6 +1,6 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
-import { RedisvService } from '../redisv/redisv.service';
+import { RedisvService } from '../c.redisv/redisv.service';
 import { Security } from '@src/libs/utils/security';
 
 @Injectable()

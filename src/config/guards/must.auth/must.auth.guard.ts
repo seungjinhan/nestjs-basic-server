@@ -11,7 +11,7 @@ import { HttpStatus } from '@nestjs/common';
 import { MUST_AUTH_KEY } from '../../annotations/must.auth/must.auth.decorator';
 import { Role } from '@prisma/client';
 import { CookieUtil } from '../../../libs/utils/session';
-import { SessionService } from '../../../session/session.service';
+import { SessionService } from '../../../c.session/session.service';
 import e from 'express';
 import { StringUtil } from '../../../libs/utils/string';
 
