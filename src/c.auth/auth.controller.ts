@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   ParseIntPipe,
@@ -6,19 +7,18 @@ import {
   Query,
   Request,
   Res,
-  UseGuards,
 } from '@nestjs/common';
 import { ApiCreatedResponse } from '@nestjs/swagger';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
 import { AuthService } from './auth.service';
-import { EmailPasswordCheckGuard } from '../config/guards/email.pw/email.pw-auth.guard';
 import { UserEntity } from '../c.user/entities/user.entity';
-import { TokenEntity } from './entities/auth.entity';
+import { TokenEntity } from './entities/token.entity';
 import { MUST_AUTH } from '../config/annotations/must.auth/must.auth.decorator';
 import { makeResponse } from '../libs/utils/api';
 import { CookieUtil } from '../libs/utils/session';
+import { LoginEmail } from './dto/login-email.dto';
 
 @ApiBearerAuth()
 @ApiTags('Auth')
@@ -26,25 +26,30 @@ import { CookieUtil } from '../libs/utils/session';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // @No_JWT()
-  // @UseGuards(EMAIL_PW_CHECK_GUARD)
-  // @Post('login')
-  // @ApiOperation({ summary: '이메일, 패스워드로 로그인하기' })
-  // @ApiResponse({ status: 200, description: '로그인성공' })
-  // @ApiCreatedResponse({ type: UserEntity })
-  // login(@Request() req) {
-  //   return req.user;
-  // }
-
-  @UseGuards(EmailPasswordCheckGuard)
+  // @UseGuards(EmailPasswordCheckGuard)
   @ApiOperation({ summary: '이메일, 패스워드로 로그인하고 Access Token 받기' })
-  @Post('token')
-  async token(@Request() req, @Res({ passthrough: true }) res: Response) {
-    const sessionKey = await this.authService.getSessionKey(req.user);
+  @Post()
+  async login(
+    @Body() user: LoginEmail,
+    @Request() req,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    // 사용자 확인
+    const dbUser: UserEntity = await this.authService.validateUser(user);
 
+    // 토큰 생성
+    const token = await this.authService.createToken(dbUser);
+
+    // 세션 새성
+    const sessionKey = await this.authService.getSessionKeyAfterSaveSession(
+      dbUser.id,
+      token,
+    );
+
+    // 쿠키에 세셩키값 저장
     CookieUtil.setSession({ res: res, value: sessionKey });
 
-    return makeResponse(true);
+    return makeResponse(true, dbUser);
   }
 
   @MUST_AUTH()
@@ -52,7 +57,7 @@ export class AuthController {
   @ApiCreatedResponse({ type: UserEntity })
   @Get('profile')
   profile(@Request() req) {
-    return req.user;
+    return makeResponse(true, req.user);
   }
 
   @MUST_AUTH()
@@ -60,6 +65,7 @@ export class AuthController {
   @ApiCreatedResponse({ type: TokenEntity })
   @Get('find_token')
   findToken(@Query('user_id', ParseIntPipe) userId: number) {
-    return this.authService.findToken(userId);
+    const token = this.authService.findToken(userId);
+    return makeResponse(true, token);
   }
 }

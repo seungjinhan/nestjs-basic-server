@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../c.user/entities/user.entity';
 import { PrismaService } from '../config/prisma/prisma.service';
 import { SessionService } from '../c.session/session.service';
+import { LoginEmail } from './dto/login-email.dto';
 
 export type Token = any;
 
@@ -22,29 +23,39 @@ export class AuthService {
    * @param pass
    * @returns
    */
-  async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.userService.findOneByEmail(email);
-    if (user && user.password === pass) {
-      const { password, ...result } = user;
-      return result;
+  async validateUser(user: LoginEmail): Promise<UserEntity> {
+    const _user: UserEntity = await this.userService.findOneByEmail(user.email);
+    if (_user && _user.password === user.password) {
+      _user.password = '';
+      return _user;
     }
     return null;
   }
 
   /**
-   * access_token 생성하기
+   * 토큰 생성
    * @param user
-   * @returns sessionKey
+   * @returns
    */
-  async getSessionKey(user: UserEntity): Promise<string> {
+  async createToken(user: UserEntity): Promise<string> {
     const payload = { email: user.email, id: user.id, role: user.role };
     const token = this.jwtService.sign(payload);
 
+    // DB에 토큰 저장
     this.__insertToken(user, token);
 
-    // 세션에 저장
-    const sessionKey = await this.sessionService.setSession(user.id, token);
+    return token;
+  }
 
+  /**
+   * 세션키가져오기
+   * @param userId
+   * @param token
+   * @returns
+   */
+  async getSessionKeyAfterSaveSession(userId, token): Promise<string> {
+    // 세션에 저장
+    const sessionKey = await this.sessionService.setSession(userId, token);
     return sessionKey;
   }
 

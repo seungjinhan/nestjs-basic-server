@@ -7,7 +7,6 @@ import { PrismaModule } from '../config/prisma/prisma.module';
 import { SessionModule } from '../c.session/session.module';
 import { UserModule } from 'src/c.user/user.module';
 import { jwtConstants } from 'src/config/authentication/jwt_constants';
-import { EmailpwStrategy } from 'src/config/guards/email.pw/email.pw.strategy';
 
 @Module({
   imports: [
@@ -17,10 +16,10 @@ import { EmailpwStrategy } from 'src/config/guards/email.pw/email.pw.strategy';
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '1h' }, // https://github.com/zeit/ms.js
+      signOptions: { expiresIn: process.env.SESSION_TIME }, // https://github.com/zeit/ms.js
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, EmailpwStrategy],
+  providers: [AuthService],
 })
 export class AuthModule {}

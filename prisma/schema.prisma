@@ -26,11 +26,11 @@ model User {
   isActive Boolean @default(false)
   role Role @default(USER)
 
-  file   Files @relation(fields: [profileImgId], references: [id])
-  profileImgId Int @unique
+  file   Files? @relation(fields: [profileImgId], references: [id])
+  profileImgId Int? @unique
 
   nick_name String?
-  country String
+  country String?
 
   token Token?
   snsAuth SnsAuth[]
