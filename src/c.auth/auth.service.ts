@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { UserService } from '../c.user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../c.user/entities/user.entity';
 import { PrismaService } from '../config/prisma/prisma.service';
 import { SessionService } from '../c.session/session.service';
 import { LoginEmail } from './dto/login-email.dto';
+import { ExceptionCode } from '../libs/constants/exception_code';
+import { CustomException } from 'src/libs/exceptions/custon.exception';
 
 export type Token = any;
 
@@ -29,7 +31,10 @@ export class AuthService {
       _user.password = '';
       return _user;
     }
-    return null;
+    throw new HttpException(
+      ExceptionCode.AUTH.WRONG_PASSWORD,
+      HttpStatus.BAD_REQUEST,
+    );
   }
 
   /**
@@ -39,12 +44,20 @@ export class AuthService {
    */
   async createToken(user: UserEntity): Promise<string> {
     const payload = { email: user.email, id: user.id, role: user.role };
-    const token = this.jwtService.sign(payload);
+    try {
+      const token = this.jwtService.sign(payload);
+      this.__insertToken(user, token);
+
+      return token;
+    } catch (error) {
+      throw new CustomException(
+        ExceptionCode.AUTH.TOKEN_FAIL,
+        error.message,
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
 
     // DB에 토큰 저장
-    this.__insertToken(user, token);
-
-    return token;
   }
 
   /**

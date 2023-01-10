@@ -36,6 +36,7 @@ export class AuthController {
   ) {
     // 사용자 확인
     const dbUser: UserEntity = await this.authService.validateUser(user);
+    console.log(dbUser);
 
     // 토큰 생성
     const token = await this.authService.createToken(dbUser);
