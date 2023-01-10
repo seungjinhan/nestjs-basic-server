@@ -22,15 +22,21 @@ export class UserEntity implements User {
   @ApiProperty()
   isActive: boolean;
 
-  @ApiProperty()
-  created: Date;
+  @ApiProperty({ required: false, nullable: true })
+  nick_name: string;
 
-  @ApiProperty()
-  updated: Date;
+  @ApiProperty({ required: false, nullable: true })
+  country: string;
+
+  @ApiProperty({ required: false, nullable: true })
+  profileImgId: number;
 
   @ApiProperty({ default: Role.USER })
   role: Role;
 
   @ApiProperty()
-  img: string;
+  created: Date;
+
+  @ApiProperty()
+  updated: Date;
 }
