@@ -37,6 +37,7 @@ lerna-debug.log*
 
 /files
 package-lock.json
+yarn.lock
 .gitignore
 
 /documentation
