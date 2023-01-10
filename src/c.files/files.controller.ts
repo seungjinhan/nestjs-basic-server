@@ -11,13 +11,13 @@ import {
   ParseIntPipe,
   ParseFilePipeBuilder,
 } from '@nestjs/common';
-import { FilesService } from './files.service';
-import { CreateFileDto } from './dto/create-file.dto';
+import { createReadStream } from 'fs';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
-import { createReadStream } from 'fs';
+import { FilesService } from './files.service';
+import { CreateFileDto } from './dto/create-file.dto';
 import { FileEntity } from './entities/file.entity';
-import { HttpException, HttpStatus } from '@nestjs/common';
 import { uploadImage } from '../config/fileupload/file.upload.config';
 
 @Controller('files')

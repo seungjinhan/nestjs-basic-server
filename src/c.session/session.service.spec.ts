@@ -23,4 +23,12 @@ describe('SessionService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  // it('setSessoin and GetSession', () => {
+  //   const res = service.setSession(3, 'token');
+
+  //   const resGet = service.getSessionByUserId(3);
+
+  //   expect(res).toBe(resGet);
+  // });
 });

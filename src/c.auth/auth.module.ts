@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport';
-import { EmailpwStrategy } from '@config/guards/email.pw/email.pw.strategy';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from '@src/config/authentication/jwt_constants';
-import { UserModule } from '@src/c.user/user.module';
 import { AuthService } from './auth.service';
 import { PrismaModule } from '../config/prisma/prisma.module';
 import { SessionModule } from '../c.session/session.module';
+import { UserModule } from 'src/c.user/user.module';
+import { jwtConstants } from 'src/config/authentication/jwt_constants';
+import { EmailpwStrategy } from 'src/config/guards/email.pw/email.pw.strategy';
 
 @Module({
   imports: [

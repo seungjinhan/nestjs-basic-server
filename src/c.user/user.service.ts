@@ -1,8 +1,7 @@
-import { Inject, Injectable, CACHE_MANAGER } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '../config/prisma/prisma.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Cache } from 'cache-manager';
 import { UserEntity } from './entities/user.entity';
 
 @Injectable()
@@ -18,9 +17,9 @@ export class UserService {
   }
 
   findOne(id: number) {
-    console.log('findOne Server');
     return this.prisma.user.findUnique({ where: { id } });
   }
+
   async findOneByEmail(email: string): Promise<UserEntity | undefined> {
     return this.prisma.user.findUnique({ where: { email } });
   }

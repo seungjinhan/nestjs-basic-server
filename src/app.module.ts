@@ -1,5 +1,6 @@
 import { join } from 'path';
 import {
+  CacheModule,
   MiddlewareConsumer,
   Module,
   NestModule,
@@ -10,24 +11,23 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { JwtModule } from '@nestjs/jwt';
+import { CacheInterceptor } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { HttpModule } from '@nestjs/axios';
 
-import { PrismaModule } from '@src/config/prisma/prisma.module';
-import { UserModule } from '@src/c.user/user.module';
-import { AuthModule } from '@src/c.auth/auth.module';
-import { LoggingInterceptor } from '@src/config/interceptors/logger.interceptor';
-import { SampleModule } from '@src/sample/sample.module';
-import { CacheModule } from '@src/config/cache/cache.module';
-import { MustAuthGuard } from '@config/guards/must.auth/must.auth.guard';
-import { FilesModule } from '@src/c.files/files.module';
 import { LoggerMiddleware } from './config/middleware/http.logger.middleware';
 import { SessionModule } from './c.session/session.module';
 import { RedisvModule } from './c.redisv/redisv.module';
-import { CacheInterceptor } from '@nestjs/common';
-import { ScheduleModule } from '@nestjs/schedule';
-import { ScheduleModule as MyScheduleModule } from '@src/c.schedule/schedule.module';
-import { EventEmitterModule } from '@nestjs/event-emitter';
-import { HttpModule } from '@nestjs/axios';
 import { SocketServerGateway } from './c.socket.server/socket.server.gateway';
+import { PrismaModule } from './config/prisma/prisma.module';
+import { UserModule } from './c.user/user.module';
+import { AuthModule } from './c.auth/auth.module';
+import { SampleModule } from './sample/sample.module';
+import { FilesModule } from './c.files/files.module';
+import { LoggingInterceptor } from './config/interceptors/logger.interceptor';
+import { MustAuthGuard } from './config/guards/must.auth/must.auth.guard';
+import { TasksModule } from './c.tasks/tasks.module';
 
 @Module({
   imports: [
@@ -44,11 +44,11 @@ import { SocketServerGateway } from './c.socket.server/socket.server.gateway';
     ScheduleModule.forRoot(),
     EventEmitterModule.forRoot(),
     PrismaModule,
-    CacheModule,
+    CacheModule.register(),
     JwtModule,
     HttpModule,
     /////////////////////////////////////////////////////////////////////
-    MyScheduleModule,
+    TasksModule,
     UserModule,
     AuthModule,
     SampleModule,

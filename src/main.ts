@@ -1,9 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 
-import { AppModule } from '@src/app.module';
-import { HttpExceptionFilter } from '@src/config/filters/http.exception.filter';
+import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './config/filters/http.exception.filter';
 import { ValidationPipe } from '@nestjs/common';
-import { setSwagger } from '@config/swagger/swagger.config';
+import { setSwagger } from './config/swagger/swagger.config';
 import * as cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

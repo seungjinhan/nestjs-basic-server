@@ -5,8 +5,8 @@ import { Cron, CronExpression, Interval } from '@nestjs/schedule';
  * https://docs.nestjs.com/techniques/task-scheduling
  */
 @Injectable()
-export class ScheduleService {
-  private readonly logger = new Logger(ScheduleService.name);
+export class TaskService {
+  private readonly logger = new Logger(TaskService.name);
 
   // @Cron('45 * * * * *')
   // handleCron() {
