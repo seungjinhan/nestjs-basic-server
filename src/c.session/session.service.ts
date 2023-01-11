@@ -35,15 +35,15 @@ export class SessionService {
    * @returns 사용자 세션 키값
    */
   async setSession(userId: number, token: string): Promise<string> {
-    const mapKey = await this.__makeKey(userId + '');
+    const userSessionKey = await this.__makeKey(userId + '');
 
     const map = new Map<string, string>([
-      [mapKey, this.__makeValue(userId, token)],
+      [userSessionKey, this.__makeValue(userId, token)],
     ]);
 
     this.redisService.setMap(this.SESSION, map);
 
-    return mapKey;
+    return userSessionKey;
   }
 
   /**

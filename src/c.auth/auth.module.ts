@@ -16,7 +16,6 @@ import { jwtConstants } from 'src/config/authentication/jwt_constants';
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: process.env.SESSION_TIME }, // https://github.com/zeit/ms.js
     }),
   ],
   controllers: [AuthController],

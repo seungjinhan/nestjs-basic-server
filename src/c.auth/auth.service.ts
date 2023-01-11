@@ -45,7 +45,9 @@ export class AuthService {
   async createToken(user: UserEntity): Promise<string> {
     const payload = { email: user.email, id: user.id, role: user.role };
     try {
-      const token = this.jwtService.sign(payload);
+      const token = this.jwtService.sign(payload, {
+        expiresIn: process.env.SESSION_TIME,
+      });
       this.__insertToken(user, token);
 
       return token;
@@ -68,8 +70,8 @@ export class AuthService {
    */
   async getSessionKeyAfterSaveSession(userId, token): Promise<string> {
     // 세션에 저장
-    const sessionKey = await this.sessionService.setSession(userId, token);
-    return sessionKey;
+    const userSessionKey = await this.sessionService.setSession(userId, token);
+    return userSessionKey;
   }
 
   /**
