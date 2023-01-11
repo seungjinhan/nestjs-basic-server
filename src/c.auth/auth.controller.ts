@@ -19,7 +19,7 @@ import { MUST_AUTH } from '../config/annotations/must.auth/must.auth.decorator';
 import { APIReturnType, makeResponse } from '../libs/utils/api';
 import { CookieUtil } from '../libs/utils/session';
 import { EmailLoginDto } from './dto/email-login.dto';
-import { Role, User } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { UserResponseDto } from '../c.user/dto/user-response.dto';
 
 @ApiBearerAuth()

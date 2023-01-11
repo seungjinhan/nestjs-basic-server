@@ -39,15 +39,27 @@ export class UserService {
   async findAll(
     conditions: ConditionWithPagingDto = undefined,
   ): Promise<UserEntity[]> {
-    let condisions = {};
+    const where: any = { ...conditions };
 
-    if (condisions !== undefined && conditions.size > 0 && conditions.page > 0)
-      condisions = {
-        skip: conditions.page,
-        take: conditions.size,
-      };
+    // console.log(conditions);
+    // if (
+    //   conditions !== undefined &&
+    //   conditions.size > -1 &&
+    //   conditions.page > -1
+    // ) {
+    //   where = {
+    //     skip: conditions.page,
+    //     take: conditions.size,
+    //   };
+    // }
+    // if (conditions !== undefined && conditions.where !== undefined) {
+    //   where = { ...where, ...conditions.where };
+    // }
 
-    return this.prisma.user.findMany(condisions);
+    console.log({ ...where });
+
+    //return this.prisma.user.findMany({ skip: 1, take: 1, where: { id: 1 } });
+    return this.prisma.user.findMany({ ...where });
   }
 
   findOne(id: number) {
@@ -79,6 +91,7 @@ export class UserService {
       });
     } else {
       return this.prisma.user.findFirst({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         where: { email: emailLoginDto.email, role: emailLoginDto.role! },
       });
     }

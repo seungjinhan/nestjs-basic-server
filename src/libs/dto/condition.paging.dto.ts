@@ -11,5 +11,5 @@ export class ConditionWithPagingDto {
   size?: number = -1;
 
   @ApiProperty()
-  conditions: Map<string, string>;
+  where: Map<string, string>;
 }

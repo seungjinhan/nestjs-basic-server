@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   ParseIntPipe,
-  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import {
@@ -21,6 +20,8 @@ import { UserEntity } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ConditionWithPagingDto } from 'src/libs/dto/condition.paging.dto';
 import { SearchCondisionUser } from './dto/search-condition-user.dto';
+import { Role } from '@prisma/client';
+import { MUST_AUTH } from 'src/config/annotations/must.auth/must.auth.decorator';
 
 @ApiBearerAuth()
 @ApiTags('User')
@@ -41,10 +42,11 @@ export class UserController {
   }
 
   /**
-   * 사용자 조회
+   * 사용자 조회 - 관리자용
    * @param conditions
    * @returns
    */
+  @MUST_AUTH(Role.ADMIN)
   @Get()
   @ApiCreatedResponse({ type: UserEntity, isArray: true })
   @ApiOperation({ summary: '사용자 전체 조회' })

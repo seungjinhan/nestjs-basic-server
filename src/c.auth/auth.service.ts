@@ -99,8 +99,12 @@ export class AuthService {
       where: { id: user.id },
     });
     if (!resToken) {
-      await this.prisma.token.create({
-        data: { userId: user.id, token: token },
+      await this.prisma.token.upsert({
+        where: {
+          userId: user.id,
+        },
+        create: { userId: user.id, token: token },
+        update: { token: token },
       });
     } else {
       await this.prisma.token.update({
