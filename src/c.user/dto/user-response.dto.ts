@@ -1,8 +1,7 @@
-import { Role, User } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
+import { UserEntity } from '../entities/user.entity';
 
-export class UserEntity implements User {
+export class UserResponseDto {
   @ApiProperty()
   id: number;
 
@@ -14,10 +13,6 @@ export class UserEntity implements User {
 
   @ApiProperty({ required: false, nullable: true })
   phone: string;
-
-  @Exclude()
-  @ApiProperty()
-  password: string;
 
   @ApiProperty()
   isActive: boolean;
@@ -31,12 +26,22 @@ export class UserEntity implements User {
   @ApiProperty({ required: false, nullable: true })
   profileImgId: number;
 
-  @ApiProperty({ default: Role.USER })
-  role: Role;
-
   @ApiProperty()
   created: Date;
 
   @ApiProperty()
   updated: Date;
+
+  covertFromEntity(userEntity: UserEntity) {
+    this.id = userEntity.id;
+    this.email = userEntity.email;
+    this.name = userEntity.name;
+    this.phone = userEntity.phone;
+    this.isActive = userEntity.isActive;
+    this.nickName = userEntity.nickName;
+    this.country = userEntity.country;
+    this.profileImgId = userEntity.profileImgId;
+    this.created = userEntity.created;
+    this.updated = userEntity.updated;
+  }
 }

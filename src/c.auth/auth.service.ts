@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from '../c.user/entities/user.entity';
 import { PrismaService } from '../config/prisma/prisma.service';
 import { SessionService } from '../c.session/session.service';
-import { LoginEmail } from './dto/login-email.dto';
+import { EmailLoginDto } from './dto/email-login.dto';
 import { ExceptionCode } from '../libs/constants/exception_code';
 import { CustomException } from 'src/libs/exceptions/custon.exception';
 
@@ -25,8 +25,14 @@ export class AuthService {
    * @param pass
    * @returns
    */
-  async validateUser(user: LoginEmail): Promise<UserEntity> {
-    const _user: UserEntity = await this.userService.findOneByEmail(user.email);
+  async validateUser(user: EmailLoginDto): Promise<UserEntity> {
+    const _user: UserEntity = await this.userService.findOneByEmail(user);
+    if (_user == null) {
+      throw new HttpException(
+        ExceptionCode.AUTH.NOT_EXIST_EMAIL,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     if (_user && _user.password === user.password) {
       _user.password = '';
       return _user;

@@ -20,6 +20,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ConditionWithPagingDto } from 'src/libs/dto/condition.paging.dto';
+import { SearchCondisionUser } from './dto/search-condition-user.dto';
 
 @ApiBearerAuth()
 @ApiTags('User')
@@ -48,8 +49,19 @@ export class UserController {
   @ApiCreatedResponse({ type: UserEntity, isArray: true })
   @ApiOperation({ summary: '사용자 전체 조회' })
   findAll(@Body() conditions?: ConditionWithPagingDto) {
-    console.log(conditions);
     return this.userService.findAll(conditions);
+  }
+
+  /**
+   * 조건에 맞는 항목 조회
+   * @param conditions
+   * @returns
+   */
+  @Get('search')
+  @ApiCreatedResponse({ type: UserEntity, isArray: true })
+  @ApiOperation({ summary: '사용자 조건에 맞게 조회' })
+  findWithCondition(@Body() conditions?: SearchCondisionUser) {
+    return this.userService.findAllByConditions(conditions);
   }
 
   /**
@@ -82,7 +94,7 @@ export class UserController {
   }
 
   /**
-   *
+   * 사용자 삭제
    * @param id
    * @returns
    */
