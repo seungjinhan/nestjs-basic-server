@@ -21,4 +21,16 @@ export class CreateUserDto {
   @IsNotEmpty()
   @ApiProperty()
   password: string;
+
+  @ApiProperty()
+  isActive?: boolean;
+
+  @ApiProperty({ required: false, nullable: true })
+  nickName?: string;
+
+  @ApiProperty({ required: false, nullable: true })
+  country?: string;
+
+  @ApiProperty({ required: false, nullable: true })
+  profileImgId?: number;
 }

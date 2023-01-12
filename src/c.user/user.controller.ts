@@ -22,6 +22,7 @@ import { ConditionWithPagingDto } from 'src/libs/dto/condition.paging.dto';
 import { SearchCondisionUser } from './dto/search-condition-user.dto';
 import { Role } from '@prisma/client';
 import { MUST_AUTH } from 'src/config/annotations/must.auth/must.auth.decorator';
+import { UserResponseDto } from './dto/user-response.dto';
 
 @ApiBearerAuth()
 @ApiTags('User')
@@ -35,23 +36,13 @@ export class UserController {
    * @returns
    */
   @Post()
-  @ApiCreatedResponse({ type: UserEntity })
+  @ApiCreatedResponse({ type: UserResponseDto })
   @ApiOperation({ summary: '사용자 저장' })
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
-
-  /**
-   * 사용자 조회 - 관리자용
-   * @param conditions
-   * @returns
-   */
-  @MUST_AUTH(Role.ADMIN)
-  @Get()
-  @ApiCreatedResponse({ type: UserEntity, isArray: true })
-  @ApiOperation({ summary: '사용자 전체 조회' })
-  findAll(@Body() conditions?: ConditionWithPagingDto) {
-    return this.userService.findAll(conditions);
+  async create(@Body() createUserDto: CreateUserDto) {
+    const resUser: UserResponseDto = new UserResponseDto();
+    const newLocal = await this.userService.create(createUserDto);
+    resUser.covertFromEntity(newLocal);
+    return resUser;
   }
 
   /**
@@ -75,7 +66,6 @@ export class UserController {
   @ApiCreatedResponse({ type: UserEntity })
   @ApiOperation({ summary: '아이디로 사용자 조회' })
   findOne(@Param('id', ParseIntPipe) id: number) {
-    console.log('call FindOne');
     return this.userService.findOne(id);
   }
 
@@ -105,5 +95,18 @@ export class UserController {
   @ApiOperation({ summary: '아이디로 사용자 삭제' })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.userService.remove(id);
+  }
+
+  /**
+   * 사용자 조회 - 관리자용
+   * @param conditions
+   * @returns
+   */
+  @MUST_AUTH(Role.ADMIN)
+  @Get()
+  @ApiCreatedResponse({ type: UserEntity, isArray: true })
+  @ApiOperation({ summary: '사용자 전체 조회' })
+  findAll(@Body() conditions?: ConditionWithPagingDto) {
+    return this.userService.findAll(conditions);
   }
 }
