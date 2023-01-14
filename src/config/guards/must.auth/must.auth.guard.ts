@@ -5,22 +5,21 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { JwtService } from '@nestjs/jwt';
-import { jwtConstants } from '../../authentication/jwt_constants';
 import { HttpStatus } from '@nestjs/common';
 import { MUST_AUTH_KEY } from '../../annotations/must.auth/must.auth.decorator';
 import { Role } from '@prisma/client';
 import { CookieUtil } from '../../../libs/utils/session';
 import { SessionService } from '../../../c.session/session.service';
-import e from 'express';
 import { StringUtil } from '../../../libs/utils/string';
+import { AuthService } from '../../../c.auth/auth.service';
+import { ExceptionCode } from '../../../libs/constants/exception_code';
 
 @Injectable()
 export class MustAuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
-    private readonly jwtService: JwtService,
     private readonly sessionService: SessionService,
+    private readonly authService: AuthService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -34,48 +33,61 @@ export class MustAuthGuard implements CanActivate {
       return true;
     }
 
-    // let token: string = context.switchToHttp().getRequest()
-    //   .headers.authorization;
-    // token = token.replace('Bearer ', '');
+    const headers = context.switchToHttp().getRequest().headers;
 
-    const key = CookieUtil.getSession({
-      req: context.switchToHttp().getRequest(),
-    });
+    const sessionKey = headers.authorization;
 
-    if (!StringUtil.isNotEmpty(key)) {
-      throw new HttpException('key is null', HttpStatus.UNAUTHORIZED);
+    // 쿠키에서 사용자 세션키를 조회
+    // const key = CookieUtil.getSessionKey({
+    //   req: context.switchToHttp().getRequest(),
+    // });
+
+    if (!StringUtil.isNotEmpty(sessionKey)) {
+      throw new HttpException(
+        ExceptionCode.AUTH.NO_SESSION_KEY,
+        HttpStatus.UNAUTHORIZED,
+      );
     }
-    const token: any = await this.sessionService.getSessionBySessionKey(key);
 
-    if (!StringUtil.isNotEmpty(token)) {
+    const realToken: any = await this.sessionService.getSessionBySessionKey(
+      sessionKey,
+    );
+
+    if (!StringUtil.isNotEmpty(realToken)) {
       throw new HttpException('Wrong session key', HttpStatus.UNAUTHORIZED);
     }
-    const realToken: string = token.split('|')[1];
 
     let res;
 
     try {
       // 토큰에서 사용자 정보를 꺼낸다.
-      res = this.jwtService.verify(realToken, {
-        secret: jwtConstants.secret,
-      });
+      res = await this.authService.checkToken(realToken);
 
-      const userRole = res.role;
+      const userRole = res['role'];
       let roleFailMessage = '';
+
+      console.log(mustAuthRes, userRole);
+      // API설정이 ADMIN
       if (mustAuthRes === Role.ADMIN) {
+        // 현재 사용자가 USER
         if (userRole === Role.USER) {
           roleFailMessage = 'Authorization Fail';
         }
+        // API설정이 SUPER
       } else if (mustAuthRes === Role.SUPER) {
+        // 현재 사용자가 USER, ADMIN
         if (userRole === Role.USER || userRole === Role.ADMIN) {
           roleFailMessage = 'Authorization Fail';
         }
       }
 
+      console.log(roleFailMessage);
+
       if (roleFailMessage !== '') {
         throw new HttpException(roleFailMessage, HttpStatus.UNAUTHORIZED);
+        return;
       } else {
-        context.switchToHttp().getRequest().user = res;
+        context.switchToHttp().getRequest().user = await res;
       }
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNAUTHORIZED);

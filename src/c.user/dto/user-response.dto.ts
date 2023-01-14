@@ -32,6 +32,9 @@ export class UserResponseDto {
   @ApiProperty()
   updated: Date;
 
+  @ApiProperty()
+  sessionKey: string;
+
   covertFromEntity(userEntity: UserEntity) {
     this.id = userEntity.id;
     this.email = userEntity.email;

@@ -28,6 +28,7 @@ import { FilesModule } from './c.files/files.module';
 import { LoggingInterceptor } from './config/interceptors/logger.interceptor';
 import { MustAuthGuard } from './config/guards/must.auth/must.auth.guard';
 import { TasksModule } from './c.tasks/tasks.module';
+import { AuthService } from './c.auth/auth.service';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { TasksModule } from './c.tasks/tasks.module';
       useClass: CacheInterceptor,
     },
     SocketServerGateway,
+    AuthService,
   ],
 })
 export class AppModule implements NestModule {

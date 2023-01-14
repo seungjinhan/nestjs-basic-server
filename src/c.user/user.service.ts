@@ -8,6 +8,7 @@ import { ExceptionCode } from '../libs/constants/exception_code';
 import { ConditionWithPagingDto } from 'src/libs/dto/condition.paging.dto';
 import { SearchCondisionUser } from './dto/search-condition-user.dto';
 import { EmailLoginDto } from 'src/c.auth/dto/email-login.dto';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -84,15 +85,16 @@ export class UserService {
 
   async findOneByEmail(
     emailLoginDto: EmailLoginDto,
+    role: Role,
   ): Promise<UserEntity | undefined> {
-    if (emailLoginDto.role == null) {
+    if (role == null) {
       return this.prisma.user.findUnique({
         where: { email: emailLoginDto.email },
       });
     } else {
       return this.prisma.user.findFirst({
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        where: { email: emailLoginDto.email, role: emailLoginDto.role! },
+        where: { email: emailLoginDto.email, role: role },
       });
     }
   }

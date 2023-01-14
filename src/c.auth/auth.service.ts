@@ -7,6 +7,8 @@ import { SessionService } from '../c.session/session.service';
 import { EmailLoginDto } from './dto/email-login.dto';
 import { ExceptionCode } from '../libs/constants/exception_code';
 import { CustomException } from 'src/libs/exceptions/custon.exception';
+import { jwtConstants } from '../config/authentication/jwt_constants';
+import { Role } from '@prisma/client';
 
 export type Token = any;
 
@@ -20,13 +22,24 @@ export class AuthService {
   ) {}
 
   /**
+   * 토큰 검증
+   * @param token
+   * @returns
+   */
+  async checkToken(token: string) {
+    return this.jwtService.verify(token, {
+      secret: jwtConstants.secret,
+    });
+  }
+
+  /**
    * 사용자 인증처리
    * @param email
    * @param pass
    * @returns
    */
-  async validateUser(user: EmailLoginDto): Promise<UserEntity> {
-    const _user: UserEntity = await this.userService.findOneByEmail(user);
+  async validateUser(user: EmailLoginDto, role: Role): Promise<UserEntity> {
+    const _user: UserEntity = await this.userService.findOneByEmail(user, role);
     if (_user == null) {
       throw new HttpException(
         ExceptionCode.AUTH.NOT_EXIST_EMAIL,
@@ -54,7 +67,7 @@ export class AuthService {
       const token = this.jwtService.sign(payload, {
         expiresIn: process.env.SESSION_TIME,
       });
-      this.__insertToken(user, token);
+      this.__insertTokenInDB(user, token);
 
       return token;
     } catch (error) {
@@ -81,6 +94,19 @@ export class AuthService {
   }
 
   /**
+   * 세션체크
+   * @param sessionKey
+   * @returns
+   */
+  async checkSession(sessionKey): Promise<any> {
+    const token: any = await this.sessionService.getSessionBySessionKey(
+      sessionKey,
+    );
+
+    return await this.checkToken(token);
+  }
+
+  /**
    * User Id로 토큰 찾기
    * @param userId
    * @returns
@@ -94,7 +120,7 @@ export class AuthService {
    * @param user
    * @param token
    */
-  async __insertToken(user: UserEntity, token: string) {
+  async __insertTokenInDB(user: UserEntity, token: string) {
     const resToken = await this.prisma.token.findUnique({
       where: { id: user.id },
     });

@@ -2,6 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { RedisvService } from '../c.redisv/redisv.service';
 import { Security } from '../libs/utils/security';
 
+interface SessionValueStructure {
+  userId: number;
+  token: string;
+}
+
 @Injectable()
 export class SessionService {
   constructor(private readonly redisService: RedisvService) {}
@@ -16,7 +21,7 @@ export class SessionService {
    * @param userId
    * @returns
    */
-  __makeKey = async (userId): Promise<string> => {
+  __makeSessionKey = async (userId): Promise<string> => {
     return await Security.makeKey(userId);
   };
 
@@ -26,7 +31,18 @@ export class SessionService {
    * @param token
    * @returns
    */
-  __makeValue = (userId: number, token: string): string => `${userId}|${token}`;
+  makeTokenAndUserId = ({ userId, token }: SessionValueStructure): string =>
+    `${userId}|${token}`;
+
+  /**
+   * 세션값에서 userId, token 나누기
+   * @param value
+   * @returns
+   */
+  getTokenAndUserId = (value: string): SessionValueStructure => {
+    const _data = value.split('|');
+    return { userId: +_data[0], token: _data[1] };
+  };
 
   /**
    * 세선저장하기
@@ -35,10 +51,10 @@ export class SessionService {
    * @returns 사용자 세션 키값
    */
   async setSession(userId: number, token: string): Promise<string> {
-    const userSessionKey = await this.__makeKey(userId + '');
+    const userSessionKey = await this.__makeSessionKey(userId + '');
 
     const map = new Map<string, string>([
-      [userSessionKey, this.__makeValue(userId, token)],
+      [userSessionKey, this.makeTokenAndUserId({ userId, token })],
     ]);
 
     this.redisService.setMap(this.SESSION, map);
@@ -55,7 +71,7 @@ export class SessionService {
     return this.redisService.get({
       key: this.SESSION,
       type: 'MAP',
-      mapKey: await this.__makeKey(userId),
+      mapKey: await this.__makeSessionKey(userId),
     });
   }
 
@@ -65,11 +81,12 @@ export class SessionService {
    * @returns
    */
   async getSessionBySessionKey(sessionKey: string) {
-    return await this.redisService.get({
+    const data: any = await this.redisService.get({
       key: this.SESSION,
       type: 'MAP',
       mapKey: sessionKey,
     });
+    return this.getTokenAndUserId(data).token;
   }
 
   /**
@@ -78,6 +95,9 @@ export class SessionService {
    * @returns
    */
   async delSession(userId: number) {
-    return this.redisService.delMap(this.SESSION, await this.__makeKey(userId));
+    return this.redisService.delMap(
+      this.SESSION,
+      await this.__makeSessionKey(userId),
+    );
   }
 }

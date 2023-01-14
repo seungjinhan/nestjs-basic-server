@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '@prisma/client';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class EmailLoginDto {
@@ -12,7 +11,4 @@ export class EmailLoginDto {
   @IsNotEmpty()
   @ApiProperty()
   password: string;
-
-  @ApiProperty({ required: false })
-  role?: Role | null;
 }

@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-
 interface CookieParams {
   res?: Response;
   req?: Request;
@@ -11,7 +10,7 @@ interface CookieParams {
  *
  */
 export const CookieUtil = {
-  session_key: 'SESSION_KEY',
+  sessionKey: 'SESSION_KEY',
   set({ res, key, value }: CookieParams) {
     res.cookie(key, value);
   },
@@ -19,11 +18,13 @@ export const CookieUtil = {
     return req.cookies[key];
   },
 
-  setSession: ({ res, value }: CookieParams) => {
-    res.cookie(CookieUtil.session_key, value);
+  setSessionKey: ({ res, value }: CookieParams) => {
+    res.cookie(CookieUtil.sessionKey, value);
   },
 
-  getSession({ req }: CookieParams) {
-    return req.cookies[this.session_key];
+  getSessionKey({ req }: CookieParams) {
+    console.log('-----cookie');
+    console.log(req.cookies);
+    return req.cookies[`${this.sessionKey}`];
   },
 };
