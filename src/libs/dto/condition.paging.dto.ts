@@ -4,11 +4,11 @@ import { IsNumber } from 'class-validator';
 export class ConditionWithPagingDto {
   @IsNumber()
   @ApiProperty()
-  page?: number = -1;
+  skip?: number = -1;
 
   @IsNumber()
   @ApiProperty()
-  size?: number = -1;
+  take?: number = -1;
 
   @ApiProperty()
   where: Map<string, string>;

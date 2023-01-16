@@ -23,7 +23,7 @@ model User {
   name  String?
   phone String?
   password String
-  isActive Boolean @default(false)
+  isActive Boolean @default(true)
   role Role @default(USER)
 
   file   Files? @relation(fields: [profileImgId], references: [id])

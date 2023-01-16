@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  Query,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import {
@@ -23,6 +25,8 @@ import { SearchCondisionUser } from './dto/search-condition-user.dto';
 import { Role } from '@prisma/client';
 import { MUST_AUTH } from 'src/config/annotations/must.auth/must.auth.decorator';
 import { UserResponseDto } from './dto/user-response.dto';
+import { makeResponse } from '../libs/utils/api';
+import { Base64DecodePipe, JsonPipe } from 'nestjs-json-pipe';
 
 @ApiBearerAuth()
 @ApiTags('User')
@@ -42,7 +46,7 @@ export class UserController {
     const resUser: UserResponseDto = new UserResponseDto();
     const newLocal = await this.userService.create(createUserDto);
     resUser.covertFromEntity(newLocal);
-    return resUser;
+    return makeResponse(true, resUser);
   }
 
   /**
@@ -53,8 +57,11 @@ export class UserController {
   @Get('search')
   @ApiCreatedResponse({ type: UserEntity, isArray: true })
   @ApiOperation({ summary: '사용자 조건에 맞게 조회' })
-  findWithCondition(@Body() conditions?: SearchCondisionUser) {
-    return this.userService.findAllByConditions(conditions);
+  async findWithCondition(@Body() conditions?: SearchCondisionUser) {
+    return makeResponse(
+      true,
+      await this.userService.findAllByConditions(conditions),
+    );
   }
 
   /**
@@ -66,7 +73,7 @@ export class UserController {
   @ApiCreatedResponse({ type: UserEntity })
   @ApiOperation({ summary: '아이디로 사용자 조회' })
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.userService.findOne(id);
+    return makeResponse(true, this.userService.findOne(id));
   }
 
   /**
@@ -82,7 +89,7 @@ export class UserController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.userService.update(id, updateUserDto);
+    return makeResponse(true, this.userService.update(id, updateUserDto));
   }
 
   /**
@@ -94,7 +101,7 @@ export class UserController {
   @ApiCreatedResponse({ type: UserEntity })
   @ApiOperation({ summary: '아이디로 사용자 삭제' })
   remove(@Param('id', ParseIntPipe) id: number) {
-    return this.userService.remove(id);
+    return makeResponse(true, this.userService.remove(id));
   }
 
   /**
@@ -106,7 +113,24 @@ export class UserController {
   @Get()
   @ApiCreatedResponse({ type: UserEntity, isArray: true })
   @ApiOperation({ summary: '사용자 전체 조회' })
-  findAll(@Body() conditions?: ConditionWithPagingDto) {
-    return this.userService.findAll(conditions);
+  async findAllWithCondition(
+    @Query('size', ParseIntPipe) take: number,
+    @Query('page', ParseIntPipe) skip: number,
+    @Query('where', JsonPipe) where: any,
+  ) {
+    return makeResponse(
+      true,
+      await this.userService.findAll(take, skip, where),
+    );
+  }
+
+  // @MUST_AUTH(Role.ADMIN)
+  @Patch('/update/active/:id/:isActive')
+  @ApiOperation({ summary: '사용자 활성화 수정' })
+  async updateUserActive(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('isActive', ParseBoolPipe) isActive: boolean,
+  ) {
+    return makeResponse(true, this.userService.updateActivity(id, isActive));
   }
 }

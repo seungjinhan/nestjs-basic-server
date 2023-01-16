@@ -5,7 +5,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { ObjectUtil } from '../libs/utils/object';
 import { ExceptionCode } from '../libs/constants/exception_code';
-import { ConditionWithPagingDto } from 'src/libs/dto/condition.paging.dto';
 import { SearchCondisionUser } from './dto/search-condition-user.dto';
 import { EmailLoginDto } from 'src/c.auth/dto/email-login.dto';
 import { Role } from '@prisma/client';
@@ -37,32 +36,24 @@ export class UserService {
    * @param conditions
    * @returns
    */
-  async findAll(
-    conditions: ConditionWithPagingDto = undefined,
-  ): Promise<UserEntity[]> {
-    const where: any = { ...conditions };
-
-    // console.log(conditions);
-    // if (
-    //   conditions !== undefined &&
-    //   conditions.size > -1 &&
-    //   conditions.page > -1
-    // ) {
-    //   where = {
-    //     skip: conditions.page,
-    //     take: conditions.size,
-    //   };
-    // }
-    // if (conditions !== undefined && conditions.where !== undefined) {
-    //   where = { ...where, ...conditions.where };
-    // }
-
-    console.log({ ...where });
-
-    //return this.prisma.user.findMany({ skip: 1, take: 1, where: { id: 1 } });
-    return this.prisma.user.findMany({ ...where });
+  async findAll(take: number, skip: number, where) {
+    const skipReal: number = take * skip;
+    return {
+      count: await this.prisma.user.count({ where }),
+      list: await this.prisma.user.findMany({
+        skip: skipReal,
+        take,
+        where,
+        orderBy: { id: 'desc' },
+      }),
+    };
   }
 
+  /**
+   *
+   * @param id
+   * @returns
+   */
   findOne(id: number) {
     return this.prisma.user.findUnique({ where: { id } });
   }
@@ -104,6 +95,22 @@ export class UserService {
       where: { id },
       data: user,
     });
+  }
+
+  /**
+   *
+   * @param id
+   * @param isActivity
+   * @returns
+   */
+  async updateActivity(id: number, isActive: boolean) {
+    console.log(id, isActive);
+    const res = await this.prisma.user.update({
+      where: { id },
+      data: { isActive },
+    });
+
+    return res;
   }
 
   remove(id: number) {
