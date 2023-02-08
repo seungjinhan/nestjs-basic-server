@@ -6,7 +6,6 @@ import {
   Post,
   Query,
   Req,
-  Res,
 } from '@nestjs/common';
 import { ApiCreatedResponse } from '@nestjs/swagger';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -20,7 +19,7 @@ import { CookieUtil } from '../libs/utils/session';
 import { EmailLoginDto } from './dto/email-login.dto';
 import { Role } from '@prisma/client';
 import { UserResponseDto } from '../c.user/dto/user-response.dto';
-import { Response, Request } from 'express';
+import { Request } from 'express';
 
 @ApiBearerAuth()
 @ApiTags('Auth')
@@ -43,9 +42,12 @@ export class AuthController {
    * @param res
    * @returns
    */
-  __login = async (user: EmailLoginDto, role: Role): Promise<APIReturnType> => {
+  __login = async (
+    user: EmailLoginDto,
+    roles: Role[],
+  ): Promise<APIReturnType> => {
     // 사용자 확인
-    const dbUser: UserEntity = await this.authService.validateUser(user, role);
+    const dbUser: UserEntity = await this.authService.validateUser(user, roles);
 
     // 토큰 생성
     const token = await this.authService.createToken(dbUser);
@@ -79,7 +81,7 @@ export class AuthController {
   })
   @Post('/admin')
   async admin(@Body() user: EmailLoginDto): Promise<APIReturnType> {
-    return this.__login(user, Role.ADMIN);
+    return this.__login(user, [Role.ADMIN, Role.SUPER]);
   }
 
   @MUST_AUTH(Role.ADMIN)
@@ -100,7 +102,7 @@ export class AuthController {
   @ApiOperation({ summary: '이메일, 패스워드로 로그인하고 Access Token 받기' })
   @Post()
   async login(@Body() user: EmailLoginDto): Promise<APIReturnType> {
-    return this.__login(user, Role.USER);
+    return this.__login(user, [Role.USER]);
   }
 
   /**

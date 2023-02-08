@@ -20,13 +20,10 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ConditionWithPagingDto } from 'src/libs/dto/condition.paging.dto';
 import { SearchCondisionUser } from './dto/search-condition-user.dto';
-import { Role } from '@prisma/client';
-import { MUST_AUTH } from 'src/config/annotations/must.auth/must.auth.decorator';
 import { UserResponseDto } from './dto/user-response.dto';
 import { makeResponse } from '../libs/utils/api';
-import { Base64DecodePipe, JsonPipe } from 'nestjs-json-pipe';
+import { JsonPipe } from 'nestjs-json-pipe';
 
 @ApiBearerAuth()
 @ApiTags('User')
@@ -62,6 +59,15 @@ export class UserController {
       true,
       await this.userService.findAllByConditions(conditions),
     );
+  }
+
+  @Get('search_admin')
+  @ApiCreatedResponse({ type: UserEntity, isArray: true })
+  @ApiOperation({ summary: '어드민 조회' })
+  async findAdmin(
+    @Query('isIncludeSuper', ParseBoolPipe) isIncludeSuper: boolean,
+  ) {
+    return makeResponse(true, await this.userService.findAdmin(isIncludeSuper));
   }
 
   /**
@@ -109,7 +115,7 @@ export class UserController {
    * @param conditions
    * @returns
    */
-  @MUST_AUTH(Role.ADMIN)
+  // @MUST_AUTH(Role.ADMIN)
   @Get()
   @ApiCreatedResponse({ type: UserEntity, isArray: true })
   @ApiOperation({ summary: '사용자 전체 조회' })

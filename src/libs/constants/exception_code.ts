@@ -6,4 +6,7 @@ export const ExceptionCode = {
     NOT_EXIST_EMAIL: 'A004',
     NO_SESSION_KEY: 'A005',
   },
+  COMMON: {
+    WRONG_REQUEST: 'B001',
+  },
 };

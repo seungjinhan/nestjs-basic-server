@@ -7,7 +7,7 @@ import { ObjectUtil } from '../libs/utils/object';
 import { ExceptionCode } from '../libs/constants/exception_code';
 import { SearchCondisionUser } from './dto/search-condition-user.dto';
 import { EmailLoginDto } from 'src/c.auth/dto/email-login.dto';
-import { Role } from '@prisma/client';
+import { Role, User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -19,16 +19,19 @@ export class UserService {
    * @returns
    */
   async create(user: CreateUserDto) {
+    // 현재 이메일이 존재 하는지 확인
     const dbUser: UserEntity = await this.prisma.user.findUnique({
       where: { email: user.email },
     });
+
     if (!ObjectUtil.isNotEmpty(dbUser)) {
       return this.prisma.user.create({ data: user });
+    } else {
+      throw new HttpException(
+        ExceptionCode.AUTH.ALREADY_EXIST_USER,
+        HttpStatus.BAD_REQUEST,
+      );
     }
-    throw new HttpException(
-      ExceptionCode.AUTH.ALREADY_EXIST_USER,
-      HttpStatus.BAD_REQUEST,
-    );
   }
 
   /**
@@ -38,15 +41,23 @@ export class UserService {
    */
   async findAll(take: number, skip: number, where) {
     const skipReal: number = take * skip;
-    return {
-      count: await this.prisma.user.count({ where }),
-      list: await this.prisma.user.findMany({
-        skip: skipReal,
-        take,
-        where,
-        orderBy: { id: 'desc' },
-      }),
-    };
+
+    try {
+      return {
+        count: await this.prisma.user.count({ where }),
+        list: await this.prisma.user.findMany({
+          skip: skipReal,
+          take,
+          where,
+          orderBy: { id: 'desc' },
+        }),
+      };
+    } catch {
+      throw new HttpException(
+        ExceptionCode.COMMON.WRONG_REQUEST,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   /**
@@ -67,31 +78,69 @@ export class UserService {
     conditions: SearchCondisionUser,
   ): Promise<UserEntity[] | undefined> {
     const where = SearchCondisionUser.makeJson(conditions);
-    return this.prisma.user.findMany({ where: where });
-  }
-
-  async findAllWithWhere(where: any): Promise<UserEntity[] | undefined> {
-    return this.prisma.user.findMany({ where });
-  }
-
-  async findOneByEmail(
-    emailLoginDto: EmailLoginDto,
-    role: Role,
-  ): Promise<UserEntity | undefined> {
-    if (role == null) {
-      return this.prisma.user.findUnique({
-        where: { email: emailLoginDto.email },
+    try {
+      return this.prisma.user.findMany({
+        where: where,
+        orderBy: { id: 'desc' },
       });
-    } else {
-      return this.prisma.user.findFirst({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        where: { email: emailLoginDto.email, role: role },
-      });
+    } catch {
+      throw new HttpException(
+        ExceptionCode.COMMON.WRONG_REQUEST,
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
-  update(id: number, user: UpdateUserDto) {
-    return this.prisma.user.update({
+  async findAdmin(isIncludeSuper: boolean): Promise<UserEntity[] | undefined> {
+    const where: any = {
+      where: {
+        OR: [
+          {
+            role: 'ADMIN',
+          },
+          isIncludeSuper ? { role: 'SUPER' } : {},
+        ],
+      },
+    };
+
+    return this.prisma.user.findMany(where);
+  }
+
+  async findAllWithWhere(where: any): Promise<UserEntity[] | undefined> {
+    try {
+      return this.prisma.user.findMany({ where });
+    } catch {
+      throw new HttpException(
+        ExceptionCode.COMMON.WRONG_REQUEST,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async findOneByEmailAndRole(
+    emailLoginDto: EmailLoginDto,
+    roles: Role[] = [Role.USER],
+  ): Promise<UserEntity | undefined> {
+    try {
+      const dbUser: User = await this.prisma.user.findUnique({
+        where: { email: emailLoginDto.email },
+      });
+
+      for (let index = 0; index < roles.length; index++) {
+        if (dbUser.role === roles[index]) {
+          return dbUser;
+        }
+      }
+    } catch {
+      throw new HttpException(
+        ExceptionCode.COMMON.WRONG_REQUEST,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  async update(id: number, user: UpdateUserDto) {
+    return await this.prisma.user.update({
       where: { id },
       data: user,
     });

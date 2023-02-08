@@ -38,8 +38,11 @@ export class AuthService {
    * @param pass
    * @returns
    */
-  async validateUser(user: EmailLoginDto, role: Role): Promise<UserEntity> {
-    const _user: UserEntity = await this.userService.findOneByEmail(user, role);
+  async validateUser(user: EmailLoginDto, roles: Role[]): Promise<UserEntity> {
+    const _user: UserEntity = await this.userService.findOneByEmailAndRole(
+      user,
+      roles,
+    );
     if (_user == null) {
       throw new HttpException(
         ExceptionCode.AUTH.NOT_EXIST_EMAIL,

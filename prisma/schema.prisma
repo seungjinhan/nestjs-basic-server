@@ -19,29 +19,56 @@ model User {
   created DateTime @default(now())
   updated DateTime @updatedAt
   
+  // 필수값
+  name  String
   email String  @unique
-  name  String?
-  phone String?
   password String
-  isActive Boolean @default(true)
-  role Role @default(USER)
 
   file   Files? @relation(fields: [profileImgId], references: [id])
   profileImgId Int? @unique
-
-  nickName String?
+  
+  email_sub String?
+  birth String?
   country String?
+  phone String?
+  passport_f_name String?
+  passport_name String?
+  passport_number String?
+  gender Gender?
+  staying_country String?
+
+  id_type IdType?
+  
+  address String?
+
+  use_lang String?
+
+  role Role @default(USER)
+  isActive Boolean @default(true)
+
+  nowAuth Auth?
 
   token Token?
-  snsAuth SnsAuth[]
+  payCard PayCard?
 }
 
+model PayCard{
+  id    Int  @id @default(autoincrement())
+  created DateTime @default(now())
+  updated DateTime @updatedAt
+  
+  user   User @relation(fields: [userId], references: [id])
+  userId Int @unique
+  
+  number String @unique
+  name String
+}
 
-model SnsAuth{
+model Auth{
   id    Int     @default(autoincrement()) @id
   created DateTime @default(now())
   updated DateTime @updatedAt
-  type SnsAuthType
+  type AuthType
   token String @unique
   user   User @relation(fields: [userId], references: [id])
   userId Int @unique
@@ -72,15 +99,32 @@ model Files{
   user User?
 }
 
+enum Gender{
+  m
+  f
+  x
+}
+enum IdType{
+  foreignerCard
+  passport
+  registrationCard
+}
+
+enum CodeType{
+  ERROR
+}
+
 enum Role{
   USER
   ADMIN
   SUPER
 }
 
-enum SnsAuthType{
+enum AuthType{
+  EMAIL
   KAKAO
   APPLE
   LINE
   WECHAT
+  GOOGLE
 }

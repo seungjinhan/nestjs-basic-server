@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SnsAuth, SnsAuthType } from '@prisma/client';
+import { Auth, AuthType } from '@prisma/client';
 
-export class SnsAuthEntity implements SnsAuth {
+export class SnsAuthEntity implements Auth {
   @ApiProperty()
   id: number;
 
@@ -12,7 +12,7 @@ export class SnsAuthEntity implements SnsAuth {
   updated: Date;
 
   @ApiProperty()
-  type: SnsAuthType;
+  type: AuthType;
 
   @ApiProperty()
   token: string;
