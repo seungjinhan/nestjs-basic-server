@@ -37,12 +37,6 @@ export class MustAuthGuard implements CanActivate {
 
     let sessionKey: string = headers.authorization;
 
-    sessionKey = sessionKey.replace('Bearer ', '');
-    // 쿠키에서 사용자 세션키를 조회
-    // const key = CookieUtil.getSessionKey({
-    //   req: context.switchToHttp().getRequest(),
-    // });
-
     if (!StringUtil.isNotEmpty(sessionKey)) {
       throw new HttpException(
         ExceptionCode.AUTH.NO_SESSION_KEY,
@@ -50,12 +44,21 @@ export class MustAuthGuard implements CanActivate {
       );
     }
 
+    sessionKey = sessionKey.replace('Bearer ', '');
+    // 쿠키에서 사용자 세션키를 조회
+    // const key = CookieUtil.getSessionKey({
+    //   req: context.switchToHttp().getRequest(),
+    // });
+
     const realToken: any = await this.sessionService.getSessionBySessionKey(
       sessionKey,
     );
 
-    if (!StringUtil.isNotEmpty(realToken)) {
-      throw new HttpException('Wrong session key', HttpStatus.UNAUTHORIZED);
+    if (realToken === null || !StringUtil.isNotEmpty(realToken)) {
+      throw new HttpException(
+        ExceptionCode.AUTH.WRONG_SESSION_KEY,
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     let res;

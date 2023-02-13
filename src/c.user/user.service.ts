@@ -7,7 +7,7 @@ import { ObjectUtil } from '../libs/utils/object';
 import { ExceptionCode } from '../libs/constants/exception_code';
 import { SearchCondisionUser } from './dto/search-condition-user.dto';
 import { EmailLoginDto } from 'src/c.auth/dto/email-login.dto';
-import { Role, User } from '@prisma/client';
+import { Role, User, Prisma } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -19,13 +19,36 @@ export class UserService {
    * @returns
    */
   async create(user: CreateUserDto): Promise<UserEntity> {
+    const res = this.prisma.$transaction(async (prisma) => {
+      return this.createForTransaction(user, prisma);
+    });
+    return res;
     // 현재 이메일이 존재 하는지 확인
-    const dbUser: UserEntity = await this.prisma.user.findUnique({
+    // const dbUser: UserEntity = await this.prisma.user.findUnique({
+    //   where: { email: user.email },
+    // });
+
+    // if (!ObjectUtil.isNotEmpty(dbUser)) {
+    //   return this.prisma.user.create({ data: user });
+    // } else {
+    //   throw new HttpException(
+    //     ExceptionCode.AUTH.ALREADY_EXIST_USER,
+    //     HttpStatus.BAD_REQUEST,
+    //   );
+    // }
+  }
+
+  async createForTransaction(
+    user: CreateUserDto,
+    _prisma: Prisma.TransactionClient,
+  ): Promise<UserEntity> {
+    // 현재 이메일이 존재 하는지 확인
+    const dbUser: UserEntity = await _prisma.user.findUnique({
       where: { email: user.email },
     });
 
     if (!ObjectUtil.isNotEmpty(dbUser)) {
-      return this.prisma.user.create({ data: user });
+      return _prisma.user.create({ data: user });
     } else {
       throw new HttpException(
         ExceptionCode.AUTH.ALREADY_EXIST_USER,

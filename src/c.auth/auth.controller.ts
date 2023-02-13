@@ -18,11 +18,9 @@ import { APIReturnType, makeResponse } from '../libs/utils/api';
 import { CookieUtil } from '../libs/utils/session';
 import { EmailLoginDto } from './dto/email-login.dto';
 import { Role } from '@prisma/client';
-import { UserResponseDto } from '../c.user/dto/user-response.dto';
 import { Request } from 'express';
 import { LoginResponseDto } from './dto/login-response';
 import { SnsJoinLoginDto } from './dto/sns-login.dto';
-import { PrismaService } from '../config/prisma/prisma.service';
 
 @ApiBearerAuth()
 @ApiTags('Auth')

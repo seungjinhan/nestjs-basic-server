@@ -86,6 +86,10 @@ export class SessionService {
       type: 'MAP',
       mapKey: sessionKey,
     });
+
+    if (data === null) {
+      return null;
+    }
     return this.getTokenAndUserId(data).token;
   }
 

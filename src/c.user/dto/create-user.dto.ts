@@ -18,4 +18,18 @@ export class CreateUserDto {
   @IsString()
   @ApiProperty()
   password: string;
+
+  constructor({
+    email,
+    name,
+    password,
+  }: {
+    email: string;
+    name: string;
+    password: string;
+  }) {
+    this.email = email;
+    this.name = name;
+    this.password = password;
+  }
 }

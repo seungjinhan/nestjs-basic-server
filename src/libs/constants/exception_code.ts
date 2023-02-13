@@ -7,6 +7,7 @@ export const ExceptionCode = {
     NO_SESSION_KEY: 'A005',
     NOT_EXIST_TOKEN: 'A006',
     NOT_MATCH_TOKEN: 'A007',
+    WRONG_SESSION_KEY: 'A008',
   },
   COMMON: {
     WRONG_REQUEST: 'B001',

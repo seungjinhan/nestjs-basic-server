@@ -90,26 +90,30 @@ export class AuthService {
   }
 
   async snsJoin(snsJoinLoginDto: SnsJoinLoginDto): Promise<UserEntity> {
-    const newUser: CreateUserDto = new CreateUserDto();
-    newUser.email = snsJoinLoginDto.email;
-    newUser.name = snsJoinLoginDto.email;
-    newUser.password = constatantNoPw;
-    const user = await this.userService.create(newUser);
+    const newUser: CreateUserDto = new CreateUserDto({
+      email: snsJoinLoginDto.email,
+      name: snsJoinLoginDto.email,
+      password: constatantNoPw,
+    });
 
-    const snsToken = new SnsTokenEntity();
-    snsToken.token = snsJoinLoginDto.token;
-    snsToken.userId = user.id;
-    snsToken.type = snsJoinLoginDto.type;
+    const res = await this.prisma.$transaction(async (prisma) => {
+      const user = await this.userService.createForTransaction(newUser, prisma);
 
-    try {
-      await this.prisma.snsToken.create({ data: snsToken });
+      const snsToken = new SnsTokenEntity();
+      snsToken.token = snsJoinLoginDto.token;
+      snsToken.userId = user.id;
+      snsToken.type = snsJoinLoginDto.type;
+      try {
+        await prisma.snsToken.create({ data: snsToken });
+      } catch {
+        throw new HttpException(
+          ExceptionCode.COMMON.WRONG_REQUEST,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
       return user;
-    } catch {
-      throw new HttpException(
-        ExceptionCode.COMMON.WRONG_REQUEST,
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+    });
+    return res;
   }
 
   /**
