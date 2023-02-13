@@ -15,6 +15,7 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOperation,
+  ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -24,6 +25,8 @@ import { SearchCondisionUser } from './dto/search-condition-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { makeResponse } from '../libs/utils/api';
 import { JsonPipe } from 'nestjs-json-pipe';
+import { APIReturnType } from '../../dist/libs/utils/api';
+import { MUST_AUTH } from 'src/config/annotations/must.auth/must.auth.decorator';
 
 @ApiBearerAuth()
 @ApiTags('User')
@@ -75,11 +78,16 @@ export class UserController {
    * @param id
    * @returns
    */
+  @MUST_AUTH()
   @Get(':id')
   @ApiCreatedResponse({ type: UserEntity })
   @ApiOperation({ summary: '아이디로 사용자 조회' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return makeResponse(true, this.userService.findOne(id));
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<APIReturnType> {
+    const user = new UserResponseDto();
+    const resUser = await user.covertFromEntity(
+      await this.userService.findUserByUserId(id),
+    );
+    return makeResponse(true, resUser);
   }
 
   /**

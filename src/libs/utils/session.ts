@@ -23,8 +23,6 @@ export const CookieUtil = {
   },
 
   getSessionKey({ req }: CookieParams) {
-    console.log('-----cookie');
-    console.log(req.cookies);
     return req.cookies[`${this.sessionKey}`];
   },
 };

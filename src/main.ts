@@ -5,6 +5,7 @@ import { HttpExceptionFilter } from './config/filters/http.exception.filter';
 import { ValidationPipe } from '@nestjs/common';
 import { setSwagger } from './config/swagger/swagger.config';
 import * as cookieParser from 'cookie-parser';
+import { DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     forceCloseConnections: true,

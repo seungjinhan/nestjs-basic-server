@@ -19,6 +19,7 @@ import { FilesService } from './files.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { FileEntity } from './entities/file.entity';
 import { uploadImage } from '../config/fileupload/file.upload.config';
+import { makeResponse } from 'src/libs/utils/api';
 
 @Controller('files')
 @ApiTags('File')
@@ -53,7 +54,10 @@ export class FilesController {
         size: 9811
         }
     */
-    return await this.filesService.create(new CreateFileDto().convert(file));
+    return makeResponse(
+      true,
+      await this.filesService.create(new CreateFileDto().convert(file)),
+    );
   }
 
   /**

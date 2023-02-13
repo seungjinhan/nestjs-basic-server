@@ -6,6 +6,7 @@ export const setSwagger = (app: any) => {
     .setDescription('The API description')
     .setVersion('1.0')
     .addTag('Server')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

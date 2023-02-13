@@ -23,13 +23,13 @@ export class UserEntity implements User {
   isActive: boolean;
 
   @ApiProperty({ required: false, nullable: true })
+  email_sub: string;
+
+  @ApiProperty({ required: false, nullable: true })
   country: string;
 
   @ApiProperty({ required: false, nullable: true })
-  profileImgId: number;
-
-  @ApiProperty({ required: false, nullable: true })
-  email_sub: string;
+  staying_country: string;
 
   @ApiProperty({ required: false, nullable: true })
   birth: string;
@@ -47,7 +47,7 @@ export class UserEntity implements User {
   gender: Gender;
 
   @ApiProperty({ required: false, nullable: true })
-  staying_country: string;
+  profileImgId: number;
 
   @ApiProperty({ required: false, nullable: true })
   id_type: IdType;

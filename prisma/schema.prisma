@@ -37,7 +37,7 @@ model User {
   gender Gender?
   staying_country String?
 
-  id_type IdType?
+  id_type IdType @default(none)
   
   address String?
 
@@ -46,8 +46,7 @@ model User {
   role Role @default(USER)
   isActive Boolean @default(true)
 
-  nowAuth Auth?
-
+  snsToken SnsToken?
   token Token?
   payCard PayCard?
 }
@@ -64,11 +63,11 @@ model PayCard{
   name String
 }
 
-model Auth{
+model SnsToken{
   id    Int     @default(autoincrement()) @id
   created DateTime @default(now())
   updated DateTime @updatedAt
-  type AuthType
+  type SnsTokenType
   token String @unique
   user   User @relation(fields: [userId], references: [id])
   userId Int @unique
@@ -100,11 +99,12 @@ model Files{
 }
 
 enum Gender{
-  m
-  f
-  x
+  M
+  F
+  X
 }
 enum IdType{
+  none
   foreignerCard
   passport
   registrationCard
@@ -120,8 +120,7 @@ enum Role{
   SUPER
 }
 
-enum AuthType{
-  EMAIL
+enum SnsTokenType{
   KAKAO
   APPLE
   LINE

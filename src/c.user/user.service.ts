@@ -18,7 +18,7 @@ export class UserService {
    * @param user
    * @returns
    */
-  async create(user: CreateUserDto) {
+  async create(user: CreateUserDto): Promise<UserEntity> {
     // 현재 이메일이 존재 하는지 확인
     const dbUser: UserEntity = await this.prisma.user.findUnique({
       where: { email: user.email },
@@ -61,12 +61,24 @@ export class UserService {
   }
 
   /**
+   * 이메일로 사용자 조회
+   * @param email
+   * @returns
+   */
+  async findUserFromEmail(email: string): Promise<UserEntity> {
+    return await this.prisma.user.findUnique({
+      where: { email },
+    });
+  }
+
+  /**
    *
    * @param id
    * @returns
    */
-  findOne(id: number) {
-    return this.prisma.user.findUnique({ where: { id } });
+  async findUserByUserId(id: number) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    return user;
   }
 
   /**
@@ -140,10 +152,18 @@ export class UserService {
   }
 
   async update(id: number, user: UpdateUserDto) {
-    return await this.prisma.user.update({
-      where: { id },
-      data: user,
-    });
+    try {
+      return await this.prisma.user.update({
+        where: { id },
+        data: user,
+      });
+    } catch (err) {
+      console.error(err);
+      throw new HttpException(
+        ExceptionCode.COMMON.WRONG_REQUEST,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   /**

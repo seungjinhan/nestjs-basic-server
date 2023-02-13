@@ -1,6 +1,9 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { UserService } from '../c.user/user.service';
 import { JwtService } from '@nestjs/jwt';
+
+import { Role } from '@prisma/client';
+
+import { UserService } from '../c.user/user.service';
 import { UserEntity } from '../c.user/entities/user.entity';
 import { PrismaService } from '../config/prisma/prisma.service';
 import { SessionService } from '../c.session/session.service';
@@ -8,7 +11,10 @@ import { EmailLoginDto } from './dto/email-login.dto';
 import { ExceptionCode } from '../libs/constants/exception_code';
 import { CustomException } from 'src/libs/exceptions/custon.exception';
 import { jwtConstants } from '../config/authentication/jwt_constants';
-import { Role } from '@prisma/client';
+import { SnsJoinLoginDto } from './dto/sns-login.dto';
+import { SnsTokenEntity } from './entities/sns-token-entity';
+import { CreateUserDto } from 'src/c.user/dto/create-user.dto';
+import { constatantNoPw } from '../c.user/user-constants';
 
 export type Token = any;
 
@@ -22,6 +28,33 @@ export class AuthService {
   ) {}
 
   /**
+   * DB에 토큰 저장
+   * @param user
+   * @param token
+   */
+  async __insertTokenInDB(user: UserEntity, token: string) {
+    // 사용자의 이전 토큰을 조회
+    const resToken = await this.prisma.token.findUnique({
+      where: { id: user.id },
+    });
+
+    if (!resToken) {
+      await this.prisma.token.upsert({
+        where: {
+          userId: user.id,
+        },
+        create: { userId: user.id, token: token },
+        update: { token: token },
+      });
+    } else {
+      await this.prisma.token.update({
+        where: { id: resToken.id },
+        data: { token: token },
+      });
+    }
+  }
+
+  /**
    * 토큰 검증
    * @param token
    * @returns
@@ -30,6 +63,71 @@ export class AuthService {
     return this.jwtService.verify(token, {
       secret: jwtConstants.secret,
     });
+  }
+
+  /**
+   * SNS 로그인 처리 -> UserEntity 반환
+   * @param snsLoginDto
+   * @returns UserEntity
+   */
+  async snsLogin(snsLoginDto: SnsJoinLoginDto): Promise<UserEntity> {
+    let errorCode;
+    const user = await this.userService.findUserFromEmail(snsLoginDto.email);
+    if (user === null) {
+      errorCode = ExceptionCode.AUTH.NOT_EXIST_EMAIL;
+    } else {
+      const snsToken = await this.findSnsTokenByUserId(user.id);
+
+      if (snsToken.token === snsLoginDto.token) {
+        const userId: number = snsToken.userId;
+        return this.userService.findUserByUserId(userId);
+      } else {
+        errorCode = ExceptionCode.AUTH.NOT_MATCH_TOKEN;
+      }
+    }
+
+    throw new HttpException(errorCode, HttpStatus.BAD_REQUEST);
+  }
+
+  async snsJoin(snsJoinLoginDto: SnsJoinLoginDto): Promise<UserEntity> {
+    const newUser: CreateUserDto = new CreateUserDto();
+    newUser.email = snsJoinLoginDto.email;
+    newUser.name = snsJoinLoginDto.email;
+    newUser.password = constatantNoPw;
+    const user = await this.userService.create(newUser);
+
+    const snsToken = new SnsTokenEntity();
+    snsToken.token = snsJoinLoginDto.token;
+    snsToken.userId = user.id;
+    snsToken.type = snsJoinLoginDto.type;
+
+    try {
+      await this.prisma.snsToken.create({ data: snsToken });
+      return user;
+    } catch {
+      throw new HttpException(
+        ExceptionCode.COMMON.WRONG_REQUEST,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  /**
+   * userId로 토큰정보 조회
+   * @param userId
+   * @returns
+   */
+  async findSnsTokenByUserId(userId: number): Promise<SnsTokenEntity> {
+    return await this.prisma.snsToken
+      .findUniqueOrThrow({
+        where: { userId },
+      })
+      .catch(() => {
+        throw new HttpException(
+          ExceptionCode.AUTH.NOT_EXIST_TOKEN,
+          HttpStatus.BAD_REQUEST,
+        );
+      });
   }
 
   /**
@@ -67,9 +165,12 @@ export class AuthService {
   async createToken(user: UserEntity): Promise<string> {
     const payload = { email: user.email, id: user.id, role: user.role };
     try {
+      // JWT 토큰생성
       const token = this.jwtService.sign(payload, {
         expiresIn: process.env.SESSION_TIME,
       });
+
+      // 토큰저장
       this.__insertTokenInDB(user, token);
 
       return token;
@@ -116,30 +217,5 @@ export class AuthService {
    */
   async findToken(userId: number): Promise<Token | undefined> {
     return await this.prisma.token.findUnique({ where: { userId } });
-  }
-
-  /**
-   * DB에 토큰 저장
-   * @param user
-   * @param token
-   */
-  async __insertTokenInDB(user: UserEntity, token: string) {
-    const resToken = await this.prisma.token.findUnique({
-      where: { id: user.id },
-    });
-    if (!resToken) {
-      await this.prisma.token.upsert({
-        where: {
-          userId: user.id,
-        },
-        create: { userId: user.id, token: token },
-        update: { token: token },
-      });
-    } else {
-      await this.prisma.token.update({
-        where: { id: resToken.id },
-        data: { token: token },
-      });
-    }
   }
 }

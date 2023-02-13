@@ -35,8 +35,9 @@ export class MustAuthGuard implements CanActivate {
 
     const headers = context.switchToHttp().getRequest().headers;
 
-    const sessionKey = headers.authorization;
+    let sessionKey: string = headers.authorization;
 
+    sessionKey = sessionKey.replace('Bearer ', '');
     // 쿠키에서 사용자 세션키를 조회
     // const key = CookieUtil.getSessionKey({
     //   req: context.switchToHttp().getRequest(),

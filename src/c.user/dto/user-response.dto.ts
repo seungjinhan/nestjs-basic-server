@@ -66,7 +66,7 @@ export class UserResponseDto {
   @ApiProperty()
   sessionKey: string;
 
-  covertFromEntity(userEntity: UserEntity) {
+  async covertFromEntity(userEntity: UserEntity) {
     this.id = userEntity.id;
     this.created = userEntity.created;
     this.updated = userEntity.updated;
@@ -87,5 +87,6 @@ export class UserResponseDto {
     this.use_lang = userEntity.use_lang;
     this.role = userEntity.role;
     this.isActive = userEntity.isActive;
+    return this;
   }
 }

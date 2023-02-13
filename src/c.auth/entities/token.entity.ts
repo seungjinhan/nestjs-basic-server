@@ -1,8 +1,6 @@
 import { Token } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class Auth {}
-
 export class TokenEntity implements Token {
   @ApiProperty()
   id: number;

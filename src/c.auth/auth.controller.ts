@@ -20,6 +20,9 @@ import { EmailLoginDto } from './dto/email-login.dto';
 import { Role } from '@prisma/client';
 import { UserResponseDto } from '../c.user/dto/user-response.dto';
 import { Request } from 'express';
+import { LoginResponseDto } from './dto/login-response';
+import { SnsJoinLoginDto } from './dto/sns-login.dto';
+import { PrismaService } from '../config/prisma/prisma.service';
 
 @ApiBearerAuth()
 @ApiTags('Auth')
@@ -37,38 +40,64 @@ export class AuthController {
   };
 
   /**
+   * UserEntity를 받아서 토큰생성 -> SessionKey만들어서 호출 반환 객체 만들어서 반환
+   * @param dbUser
+   * @returns
+   */
+  async __makeResponseAfterSessionKey(
+    dbUser: UserEntity,
+  ): Promise<APIReturnType> {
+    // 토큰 생성
+    const token = await this.authService.createToken(dbUser);
+
+    // 세션 새성
+    const sesstionKey = await this.authService.getSessionKeyAfterSaveSession(
+      dbUser.id,
+      token,
+    );
+
+    const resLogin: LoginResponseDto = new LoginResponseDto();
+    resLogin.email = dbUser.email;
+    resLogin.userId = dbUser.id;
+    resLogin.sessionKey = sesstionKey;
+
+    return makeResponse(true, resLogin);
+  }
+
+  /**
+   * SNS 로그인 처리
+   * @param snsLoginUser
+   * @returns
+   */
+  async __snsLogin(snsLoginUser: SnsJoinLoginDto): Promise<APIReturnType> {
+    const dbUser: UserEntity = await this.authService.snsLogin(snsLoginUser);
+    return await this.__makeResponseAfterSessionKey(dbUser);
+  }
+
+  /**
+   * SNS회원가입
+   * @param snsJoinUserDto
+   * @returns
+   */
+  async __snsJoin(snsJoinUserDto: SnsJoinLoginDto): Promise<APIReturnType> {
+    const userEntity = await this.authService.snsJoin(snsJoinUserDto);
+    return makeResponse(true, userEntity.id);
+  }
+
+  /**
    * 로그인처리
    * @param user
    * @param res
    * @returns
    */
-  __login = async (
+  async __emailLogin(
     user: EmailLoginDto,
     roles: Role[],
-  ): Promise<APIReturnType> => {
+  ): Promise<APIReturnType> {
     // 사용자 확인
     const dbUser: UserEntity = await this.authService.validateUser(user, roles);
-
-    // 토큰 생성
-    const token = await this.authService.createToken(dbUser);
-
-    // 세션 새성
-    const userSessionKey = await this.authService.getSessionKeyAfterSaveSession(
-      dbUser.id,
-      token,
-    );
-
-    // 쿠키에 세셩키값 저장
-    // CookieUtil.setSessionKey({ res: res, value: userSessionKey });
-
-    // 사용자 반환 객체 생성
-    const resUser: UserResponseDto = new UserResponseDto();
-    resUser.covertFromEntity(dbUser);
-
-    resUser.sessionKey = userSessionKey;
-
-    return makeResponse(true, resUser);
-  };
+    return await this.__makeResponseAfterSessionKey(dbUser);
+  }
 
   /**
    * 관리자 로그인
@@ -81,9 +110,12 @@ export class AuthController {
   })
   @Post('/admin')
   async admin(@Body() user: EmailLoginDto): Promise<APIReturnType> {
-    return this.__login(user, [Role.ADMIN, Role.SUPER]);
+    return this.__emailLogin(user, [Role.ADMIN, Role.SUPER]);
   }
 
+  /**
+   * @returns
+   */
   @MUST_AUTH(Role.ADMIN)
   @ApiOperation({
     summary: '관리자, 이메일, 패스워드로 로그인하고 Access Token 받기',
@@ -100,13 +132,34 @@ export class AuthController {
    * @returns
    */
   @ApiOperation({ summary: '이메일, 패스워드로 로그인하고 Access Token 받기' })
-  @Post()
-  async login(@Body() user: EmailLoginDto): Promise<APIReturnType> {
-    return this.__login(user, [Role.USER]);
+  @Post('/login/email')
+  async emailLogin(@Body() user: EmailLoginDto): Promise<APIReturnType> {
+    return this.__emailLogin(user, [Role.USER]);
+  }
+
+  /**
+   * SNS 로그인
+   * @param loginInfo
+   * @returns
+   */
+  @ApiOperation({ summary: 'SNS 로그인하고 Access Token 받기' })
+  @Post('/login/sns')
+  async snsLogin(@Body() loginInfo: SnsJoinLoginDto): Promise<APIReturnType> {
+    return this.__snsLogin(loginInfo);
   }
 
   /**
    *
+   * @param loginInfo
+   * @returns
+   */
+  @ApiOperation({ summary: 'SNS 회원가입' })
+  @Post('/join/sns')
+  async snsJoin(@Body() loginInfo: SnsJoinLoginDto): Promise<APIReturnType> {
+    return this.__snsJoin(loginInfo);
+  }
+
+  /**
    * @param req
    * @returns
    */
