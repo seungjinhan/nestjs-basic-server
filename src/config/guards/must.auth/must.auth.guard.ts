@@ -8,7 +8,6 @@ import { Reflector } from '@nestjs/core';
 import { HttpStatus } from '@nestjs/common';
 import { MUST_AUTH_KEY } from '../../annotations/must.auth/must.auth.decorator';
 import { Role } from '@prisma/client';
-import { CookieUtil } from '../../../libs/utils/session';
 import { SessionService } from '../../../c.session/session.service';
 import { StringUtil } from '../../../libs/utils/string';
 import { AuthService } from '../../../c.auth/auth.service';
@@ -32,6 +31,8 @@ export class MustAuthGuard implements CanActivate {
     if (mustAuthRes === undefined) {
       return true;
     }
+
+    console.log(mustAuthRes);
 
     const headers = context.switchToHttp().getRequest().headers;
 
@@ -70,7 +71,6 @@ export class MustAuthGuard implements CanActivate {
       const userRole = res['role'];
       let roleFailMessage = '';
 
-      console.log(mustAuthRes, userRole);
       // API설정이 ADMIN
       if (mustAuthRes === Role.ADMIN) {
         // 현재 사용자가 USER
@@ -85,11 +85,8 @@ export class MustAuthGuard implements CanActivate {
         }
       }
 
-      console.log(roleFailMessage);
-
       if (roleFailMessage !== '') {
         throw new HttpException(roleFailMessage, HttpStatus.UNAUTHORIZED);
-        return;
       } else {
         context.switchToHttp().getRequest().user = await res;
       }

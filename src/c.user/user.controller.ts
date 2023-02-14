@@ -1,7 +1,6 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
@@ -9,16 +8,15 @@ import {
   ParseIntPipe,
   Query,
   ParseBoolPipe,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOperation,
-  ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { SearchCondisionUser } from './dto/search-condition-user.dto';
@@ -27,27 +25,13 @@ import { makeResponse } from '../libs/utils/api';
 import { JsonPipe } from 'nestjs-json-pipe';
 import { APIReturnType } from '../../dist/libs/utils/api';
 import { MUST_AUTH } from 'src/config/annotations/must.auth/must.auth.decorator';
+import { Request } from 'express';
 
 @ApiBearerAuth()
 @ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
-  /**
-   * 사용자 생성
-   * @param createUserDto
-   * @returns
-   */
-  @Post()
-  @ApiCreatedResponse({ type: UserResponseDto })
-  @ApiOperation({ summary: '사용자 저장' })
-  async create(@Body() createUserDto: CreateUserDto) {
-    const resUser: UserResponseDto = new UserResponseDto();
-    const newLocal = await this.userService.create(createUserDto);
-    resUser.covertFromEntity(newLocal);
-    return makeResponse(true, resUser);
-  }
 
   /**
    * 조건에 맞는 항목 조회
@@ -78,16 +62,28 @@ export class UserController {
    * @param id
    * @returns
    */
-  @MUST_AUTH()
-  @Get(':id')
+  @MUST_AUTH('ADMIN')
+  @Get('profile/:id')
   @ApiCreatedResponse({ type: UserEntity })
   @ApiOperation({ summary: '아이디로 사용자 조회' })
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<APIReturnType> {
+  async profile(@Param('id', ParseIntPipe) id: number): Promise<APIReturnType> {
     const user = new UserResponseDto();
     const resUser = await user.covertFromEntity(
       await this.userService.findUserByUserId(id),
     );
     return makeResponse(true, resUser);
+  }
+
+  /**
+   * @param req
+   * @returns
+   */
+  @MUST_AUTH()
+  @ApiOperation({ summary: '사용자 프로필 조회 (토큰필요)' })
+  @ApiCreatedResponse({ type: UserEntity })
+  @Get('my_profile')
+  myProfile(@Req() req: Request) {
+    return makeResponse(true, req.user);
   }
 
   /**

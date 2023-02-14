@@ -15,27 +15,19 @@ import { UserEntity } from '../c.user/entities/user.entity';
 import { TokenEntity } from './entities/token.entity';
 import { MUST_AUTH } from '../config/annotations/must.auth/must.auth.decorator';
 import { APIReturnType, makeResponse } from '../libs/utils/api';
-import { CookieUtil } from '../libs/utils/session';
 import { EmailLoginDto } from './dto/email-login.dto';
 import { Role } from '@prisma/client';
 import { Request } from 'express';
 import { LoginResponseDto } from './dto/login-response';
 import { SnsJoinLoginDto } from './dto/sns-login.dto';
+import { UserResponseDto } from '../c.user/dto/user-response.dto';
+import { CreateUserDto } from '../c.user/dto/create-user.dto';
 
 @ApiBearerAuth()
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
-  /**
-   * 인증확인
-   * @param req
-   */
-  _checkAuth = async (req: Request) => {
-    const sessionKey = CookieUtil.getSessionKey({ req: req });
-    await this.authService.checkSession(sessionKey);
-  };
 
   /**
    * UserEntity를 받아서 토큰생성 -> SessionKey만들어서 호출 반환 객체 만들어서 반환
@@ -80,6 +72,16 @@ export class AuthController {
   async __snsJoin(snsJoinUserDto: SnsJoinLoginDto): Promise<APIReturnType> {
     const userEntity = await this.authService.snsJoin(snsJoinUserDto);
     return makeResponse(true, userEntity.id);
+  }
+
+  /**
+   *
+   * @param user
+   * @returns
+   */
+  async __emailJoin(user: CreateUserDto): Promise<APIReturnType> {
+    const newLocal = await this.authService.emailJoin(user);
+    return makeResponse(true, newLocal.id);
   }
 
   /**
@@ -155,6 +157,18 @@ export class AuthController {
   @Post('/join/sns')
   async snsJoin(@Body() loginInfo: SnsJoinLoginDto): Promise<APIReturnType> {
     return this.__snsJoin(loginInfo);
+  }
+
+  /**
+   * 사용자 생성
+   * @param createUserDto
+   * @returns
+   */
+  @Post('/join/email')
+  @ApiCreatedResponse({ type: UserResponseDto })
+  @ApiOperation({ summary: '사용자 저장' })
+  async create(@Body() createUserDto: CreateUserDto) {
+    return this.__emailJoin(createUserDto);
   }
 
   /**

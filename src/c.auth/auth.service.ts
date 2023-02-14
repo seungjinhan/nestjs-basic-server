@@ -89,8 +89,22 @@ export class AuthService {
     throw new HttpException(errorCode, HttpStatus.BAD_REQUEST);
   }
 
+  /**
+   * 회원가입 처리
+   * @param user
+   * @returns
+   */
+  async emailJoin(user: CreateUserDto): Promise<UserEntity> {
+    return await this.userService.create(user);
+  }
+
+  /**
+   * SNS 회원가입 처리
+   * @param snsJoinLoginDto
+   * @returns
+   */
   async snsJoin(snsJoinLoginDto: SnsJoinLoginDto): Promise<UserEntity> {
-    const newUser: CreateUserDto = new CreateUserDto({
+    const newUser: CreateUserDto = new CreateUserDto().set({
       email: snsJoinLoginDto.email,
       name: snsJoinLoginDto.email,
       password: constatantNoPw,

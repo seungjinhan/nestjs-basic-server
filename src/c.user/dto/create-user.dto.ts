@@ -19,7 +19,7 @@ export class CreateUserDto {
   @ApiProperty()
   password: string;
 
-  constructor({
+  set({
     email,
     name,
     password,
@@ -31,5 +31,7 @@ export class CreateUserDto {
     this.email = email;
     this.name = name;
     this.password = password;
+
+    return this;
   }
 }
