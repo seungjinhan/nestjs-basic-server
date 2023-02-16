@@ -26,6 +26,7 @@ import { JsonPipe } from 'nestjs-json-pipe';
 import { APIReturnType } from '../../dist/libs/utils/api';
 import { MUST_AUTH } from 'src/config/annotations/must.auth/must.auth.decorator';
 import { Request } from 'express';
+import { Role } from '@prisma/client';
 
 @ApiBearerAuth()
 @ApiTags('User')
@@ -38,6 +39,7 @@ export class UserController {
    * @param conditions
    * @returns
    */
+  @MUST_AUTH(Role.SUPER)
   @Get('search')
   @ApiCreatedResponse({ type: UserEntity, isArray: true })
   @ApiOperation({ summary: '사용자 조건에 맞게 조회' })
@@ -48,6 +50,7 @@ export class UserController {
     );
   }
 
+  @MUST_AUTH(Role.ADMIN)
   @Get('search_admin')
   @ApiCreatedResponse({ type: UserEntity, isArray: true })
   @ApiOperation({ summary: '어드민 조회' })
@@ -62,7 +65,7 @@ export class UserController {
    * @param id
    * @returns
    */
-  @MUST_AUTH('ADMIN')
+  @MUST_AUTH(Role.ADMIN)
   @Get('profile/:id')
   @ApiCreatedResponse({ type: UserEntity })
   @ApiOperation({ summary: '아이디로 사용자 조회' })
@@ -92,9 +95,10 @@ export class UserController {
    * @param updateUserDto
    * @returns
    */
-  @Patch(':id')
+  @MUST_AUTH()
   @ApiCreatedResponse({ type: UserEntity })
   @ApiOperation({ summary: '사용자 정보 업데이트' })
+  @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -107,9 +111,10 @@ export class UserController {
    * @param id
    * @returns
    */
-  @Delete(':id')
+  @MUST_AUTH(Role.ADMIN)
   @ApiCreatedResponse({ type: UserEntity })
   @ApiOperation({ summary: '아이디로 사용자 삭제' })
+  @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return makeResponse(true, this.userService.remove(id));
   }
@@ -119,10 +124,10 @@ export class UserController {
    * @param conditions
    * @returns
    */
-  // @MUST_AUTH(Role.ADMIN)
-  @Get()
+  @MUST_AUTH(Role.ADMIN)
   @ApiCreatedResponse({ type: UserEntity, isArray: true })
   @ApiOperation({ summary: '사용자 전체 조회' })
+  @Get()
   async findAllWithCondition(
     @Query('size', ParseIntPipe) take: number,
     @Query('page', ParseIntPipe) skip: number,
@@ -134,9 +139,10 @@ export class UserController {
     );
   }
 
-  // @MUST_AUTH(Role.ADMIN)
-  @Patch('/update/active/:id/:isActive')
+  @MUST_AUTH(Role.ADMIN)
+  @ApiCreatedResponse({ type: UserEntity, isArray: false })
   @ApiOperation({ summary: '사용자 활성화 수정' })
+  @Patch('/update/active/:id/:isActive')
   async updateUserActive(
     @Param('id', ParseIntPipe) id: number,
     @Param('isActive', ParseBoolPipe) isActive: boolean,

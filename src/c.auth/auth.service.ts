@@ -78,7 +78,7 @@ export class AuthService {
     } else {
       const snsToken = await this.findSnsTokenByUserId(user.id);
 
-      if (snsToken.token === snsLoginDto.token) {
+      if (snsToken.token.toString() === snsLoginDto.token.toString()) {
         const userId: number = snsToken.userId;
         return this.userService.findUserByUserId(userId);
       } else {
@@ -113,12 +113,12 @@ export class AuthService {
     const res = await this.prisma.$transaction(async (prisma) => {
       const user = await this.userService.createForTransaction(newUser, prisma);
 
-      const snsToken = new SnsTokenEntity();
-      snsToken.token = snsJoinLoginDto.token;
-      snsToken.userId = user.id;
-      snsToken.type = snsJoinLoginDto.type;
+      const snsTokenObj = new SnsTokenEntity();
+      snsTokenObj.token = snsJoinLoginDto.token;
+      snsTokenObj.userId = user.id;
+      snsTokenObj.type = snsJoinLoginDto.type;
       try {
-        await prisma.snsToken.create({ data: snsToken });
+        await prisma.snsToken.create({ data: snsTokenObj });
       } catch {
         throw new HttpException(
           ExceptionCode.COMMON.WRONG_REQUEST,

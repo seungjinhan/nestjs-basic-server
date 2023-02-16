@@ -108,7 +108,8 @@ export class AuthController {
   @ApiOperation({
     summary: '관리자, 이메일, 패스워드로 로그인하고 Access Token 받기',
   })
-  @Post('/admin')
+  @ApiCreatedResponse({ type: LoginResponseDto })
+  @Post('/admin/login')
   async admin(@Body() user: EmailLoginDto): Promise<APIReturnType> {
     return this.__emailLogin(user, [Role.ADMIN, Role.SUPER]);
   }
@@ -120,6 +121,7 @@ export class AuthController {
   @ApiOperation({
     summary: '관리자, 이메일, 패스워드로 로그인하고 Access Token 받기',
   })
+  @ApiCreatedResponse({ type: Boolean })
   @Get('/is_admin')
   async isAdmin() {
     return makeResponse(true);
@@ -132,6 +134,7 @@ export class AuthController {
    * @returns
    */
   @ApiOperation({ summary: '이메일, 패스워드로 로그인하고 Access Token 받기' })
+  @ApiCreatedResponse({ type: LoginResponseDto })
   @Post('/login/email')
   async emailLogin(@Body() user: EmailLoginDto): Promise<APIReturnType> {
     return this.__emailLogin(user, [Role.USER]);
@@ -143,6 +146,7 @@ export class AuthController {
    * @returns
    */
   @ApiOperation({ summary: 'SNS 로그인하고 Access Token 받기' })
+  @ApiCreatedResponse({ type: LoginResponseDto })
   @Post('/login/sns')
   async snsLogin(@Body() loginInfo: SnsJoinLoginDto): Promise<APIReturnType> {
     return this.__snsLogin(loginInfo);
@@ -150,13 +154,14 @@ export class AuthController {
 
   /**
    *
-   * @param loginInfo
+   * @param joinInfo
    * @returns
    */
   @ApiOperation({ summary: 'SNS 회원가입' })
+  @ApiCreatedResponse({ type: Number })
   @Post('/join/sns')
-  async snsJoin(@Body() loginInfo: SnsJoinLoginDto): Promise<APIReturnType> {
-    return this.__snsJoin(loginInfo);
+  async snsJoin(@Body() joinInfo: SnsJoinLoginDto): Promise<APIReturnType> {
+    return this.__snsJoin(joinInfo);
   }
 
   /**
@@ -164,9 +169,9 @@ export class AuthController {
    * @param createUserDto
    * @returns
    */
-  @Post('/join/email')
-  @ApiCreatedResponse({ type: UserResponseDto })
   @ApiOperation({ summary: '사용자 저장' })
+  @ApiCreatedResponse({ type: UserResponseDto })
+  @Post('/join/email')
   async create(@Body() createUserDto: CreateUserDto) {
     return this.__emailJoin(createUserDto);
   }

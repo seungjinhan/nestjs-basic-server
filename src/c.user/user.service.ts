@@ -141,6 +141,11 @@ export class UserService {
     return this.prisma.user.findMany(where);
   }
 
+  /**
+   *
+   * @param where
+   * @returns
+   */
   async findAllWithWhere(where: any): Promise<UserEntity[] | undefined> {
     try {
       return this.prisma.user.findMany({ where });
@@ -152,6 +157,12 @@ export class UserService {
     }
   }
 
+  /**
+   *
+   * @param emailLoginDto
+   * @param roles
+   * @returns
+   */
   async findOneByEmailAndRole(
     emailLoginDto: EmailLoginDto,
     roles: Role[] = [Role.USER],
@@ -160,6 +171,11 @@ export class UserService {
       const dbUser: User = await this.prisma.user.findUnique({
         where: { email: emailLoginDto.email },
       });
+      console.log(dbUser, roles);
+
+      if (dbUser === null) {
+        return dbUser;
+      }
 
       for (let index = 0; index < roles.length; index++) {
         if (dbUser.role === roles[index]) {
@@ -174,6 +190,12 @@ export class UserService {
     }
   }
 
+  /**
+   *
+   * @param id
+   * @param user
+   * @returns
+   */
   async update(id: number, user: UpdateUserDto) {
     try {
       return await this.prisma.user.update({
@@ -195,16 +217,19 @@ export class UserService {
    * @param isActivity
    * @returns
    */
-  async updateActivity(id: number, isActive: boolean) {
-    console.log(id, isActive);
+  async updateActivity(id: number, isActive: boolean): Promise<UserEntity> {
     const res = await this.prisma.user.update({
       where: { id },
       data: { isActive },
     });
-
     return res;
   }
 
+  /**
+   *
+   * @param id
+   * @returns
+   */
   remove(id: number) {
     return this.prisma.user.delete({ where: { id } });
   }
