@@ -76,8 +76,9 @@ export class FilesController {
       throw new HttpException('File not found', HttpStatus.BAD_REQUEST);
     }
     const file = createReadStream(fileInfo.path);
+    const fileName = encodeURIComponent(fileInfo.originalname);
     res.set({
-      'Content-Disposition': `attachment; filename=${fileInfo.originalname}`,
+      'Content-Disposition': `attachment; filename=${fileName}`,
     });
     return new StreamableFile(file);
   }
